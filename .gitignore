@@ -7,3 +7,4 @@ dist/
 .RData
 .DS_Store
 apps/web/public/data
+*.tsbuildinfo

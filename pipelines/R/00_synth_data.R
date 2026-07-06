@@ -69,11 +69,12 @@ cli::cli_inform("Linhas geradas: {nrow(gold)} ({nrow(muni)} municípios x {lengt
 
 # ---- 3. Persistir com proveniência (write_parquet_climasus) ---------------
 
-gold_climasus <- ensure_climasus_df(
+# new_climasus_df() é interna (não exportada) — write_parquet_climasus() exige
+# um climasus_df e o pacote não expõe um construtor público para tibbles
+# comuns, então usamos climasus4r::: aqui (é o próprio pacote que orquestramos).
+gold_climasus <- climasus4r:::new_climasus_df(
   gold,
-  system = "SIM",
-  stage  = "aggregate",
-  type   = "agg"
+  list(system = "SIM", stage = "aggregate", type = "agg")
 )
 gold_climasus <- sus_meta(
   gold_climasus,

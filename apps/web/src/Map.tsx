@@ -44,10 +44,12 @@ export function Map({ values, metric, onSelectMuni }: MapProps) {
         source: "municipios",
         paint: {
           "fill-color": [
-            "case",
-            ["==", ["feature-state", "value"], null],
-            "#cbd5c0",
-            ["interpolate", ["linear"], ["feature-state", "value"], 0, "#ffedcc", 1, "#c0392b"],
+            "interpolate",
+            ["linear"],
+            ["coalesce", ["feature-state", "value"], -1],
+            -1, "#cbd5c0",
+            0, "#ffedcc",
+            1, "#c0392b",
           ],
           "fill-opacity": 0.85,
         },

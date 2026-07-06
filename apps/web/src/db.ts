@@ -24,8 +24,12 @@ async function getDb(): Promise<duckdb.AsyncDuckDB> {
 
 /** Nome virtual usado nas queries SQL (registrado uma vez, via HTTP range requests). */
 export const HEALTH_CLIMATE_FILE = "health_climate_daily.parquet";
-const HEALTH_CLIMATE_PARQUET_URL =
-  "/data/gold/health_climate_daily/v0.1.0/uf=RO/data.parquet";
+// URL absoluta: o worker do DuckDB-WASM roda num contexto blob: sem base URL da
+// página, então um caminho relativo ("/data/...") falha ao montar a request.
+const HEALTH_CLIMATE_PARQUET_URL = new URL(
+  "/data/gold/health_climate_daily/v0.1.0/uf=RO/data.parquet",
+  window.location.origin,
+).href;
 
 let registered = false;
 async function ensureDatasetsRegistered(): Promise<void> {
