@@ -1,0 +1,9 @@
+data/**
+!data/**/.gitkeep
+node_modules/
+dist/
+.Rproj.user/
+.Rhistory
+.RData
+.DS_Store
+apps/web/public/data
