@@ -1,0 +1,10 @@
+[project]
+name = "climasus4py"
+version = "0.1.0"
+description = "Cliente Python de leitura para os datasets Gold do climasusDB (Fase 6 — esqueleto inicial)."
+requires-python = ">=3.10"
+dependencies = ["pyarrow>=14"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"

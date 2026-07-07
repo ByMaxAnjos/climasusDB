@@ -1,0 +1,28 @@
+Package: climasusdb
+Title: Pipelines de dados do climasusDB (nao um pacote R publicavel)
+Version: 0.1.0
+Description: DESCRIPTION usada apenas como ancora para renv::snapshot(type = "explicit").
+    Lista as dependencias R reais dos scripts em pipelines/R/*.R.
+License: MIT
+Encoding: UTF-8
+Imports:
+    climasus4r,
+    microdatasus,
+    read.dbc,
+    targets,
+    tarchetypes,
+    arrow,
+    sf,
+    geobr,
+    dplyr,
+    tidyr,
+    purrr,
+    yaml,
+    jsonlite,
+    cli,
+    httr2,
+    slider,
+    glue
+Remotes:
+    ByMaxAnjos/climasus4r,
+    rfsaldanha/microdatasus

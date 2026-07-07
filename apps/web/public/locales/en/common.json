@@ -1,0 +1,16 @@
+{
+  "title": "climasusDB — Atlas",
+  "subtitle": "Prototype (synthetic data)",
+  "indicator": "Indicator",
+  "municipality": "Municipality",
+  "loading": "Loading local query engine (DuckDB-WASM)…",
+  "error": "Error querying data.",
+  "select_municipality": "Select a municipality on the map",
+  "time_series_title": "Time series — {{name}}",
+  "metric": {
+    "deaths_total": "Deaths (climate-sensitive groups)",
+    "tmax": "Maximum temperature (°C)",
+    "precip": "Precipitation (mm)"
+  },
+  "stations": "INMET stations"
+}

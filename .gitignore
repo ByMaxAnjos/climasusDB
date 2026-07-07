@@ -8,3 +8,8 @@ dist/
 .DS_Store
 apps/web/public/data
 *.tsbuildinfo
+# Cache do {targets}: pode conter microdados de saúde serializados
+# (bronze_sim/silver_sim), nunca comitar.
+_targets/
+__pycache__/
+*.pyc

@@ -18,8 +18,9 @@ export type Metric = Extract<
   "deaths_total" | "tmax" | "precip"
 >;
 
-export const METRICS: { key: Metric; label: string }[] = [
-  { key: "deaths_total", label: "Óbitos (grupos climate-sensitive)" },
-  { key: "tmax", label: "Temperatura máxima (°C)" },
-  { key: "precip", label: "Precipitação (mm)" },
+// Rótulos vêm do i18n (chave metric.<key> em public/locales/*/common.json).
+export const METRICS: { key: Metric }[] = [
+  { key: "deaths_total" },
+  { key: "tmax" },
+  { key: "precip" },
 ];

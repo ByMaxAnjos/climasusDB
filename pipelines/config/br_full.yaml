@@ -1,0 +1,46 @@
+# Configuração nacional (Fase 2) — mesma estrutura de ro_mvp.yaml, escopo Brasil.
+# `uf: BR` sinaliza para os wrappers em pipelines/R/*.R particionar por UF
+# (Hive: gold/{dataset}/v{version}/uf={UF}/data.parquet), uma UF por vez, em
+# vez de baixar o país inteiro numa só chamada — mais lento, mas retomável e
+# sem estourar memória. Rodar via: Rscript pipelines/R/run_national.R
+#
+# ⚠️ Escopo grande (esforço "L" no roadmap, docs/PLANO.md): rodar fora de
+# horário de pico e com `use_cache = TRUE` (default do climasus4r) para
+# permitir retomada se a conexão cair no meio.
+
+uf: BR
+uf_list: [
+  "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB",
+  "PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"
+]
+years: [2018, 2019, 2020, 2021, 2022, 2023]
+
+health:
+  system: "SIM-DO"
+  disease_group: "climate_sensitive_all"
+  time_unit: "day"
+  extra_systems: ["SIH-RD", "SINAN-DENGUE"] # Fase 2: hospitalizações + arboviroses
+
+climate:
+  temporal_strategy: "exact"
+  climate_vars: ["tair_dry_bulb_c", "tair_max_c", "tair_min_c", "rainfall_mm", "rh_mean_porc"]
+  gridded_sources: ["era5", "chirps"] # via sus_grid_era5()/sus_grid_chirps() — sem API key
+
+heatwaves:
+  methods: ["WHO", "WMO", "INMET"]
+  baseline_start: ~
+  baseline_end: ~
+  percentile: 90
+
+gold:
+  version: "1.0.0"
+  chunk_size: 100000
+
+paths:
+  bronze: "data/bronze"
+  silver: "data/silver"
+  public: "data/public"
+
+tiles:
+  # gerado por pipelines/R/generate_pmtiles.R (requer tippecanoe instalado)
+  output: "apps/web/public/tiles/municipios_br.pmtiles"

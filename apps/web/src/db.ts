@@ -22,24 +22,33 @@ async function getDb(): Promise<duckdb.AsyncDuckDB> {
   return dbPromise;
 }
 
-/** Nome virtual usado nas queries SQL (registrado uma vez, via HTTP range requests). */
+// Nomes virtuais usados nas queries SQL (registrados uma vez, via HTTP range
+// requests). URL absoluta: o worker do DuckDB-WASM roda num contexto blob:
+// sem base URL da página, então um caminho relativo ("/data/...") falha.
 export const HEALTH_CLIMATE_FILE = "health_climate_daily.parquet";
-// URL absoluta: o worker do DuckDB-WASM roda num contexto blob: sem base URL da
-// página, então um caminho relativo ("/data/...") falha ao montar a request.
-const HEALTH_CLIMATE_PARQUET_URL = new URL(
-  "/data/gold/health_climate_daily/v0.1.0/uf=RO/data.parquet",
-  window.location.origin,
-).href;
+export const DIM_STATION_FILE = "dim_station.parquet";
+
+// v1.0.0 = dados reais (SIM-DO + INMET, Fase 1); v0.1.0 = sintético (Fase 0).
+// Mesmo schema nas duas — troca de versão é só este caminho, zero mudança
+// de código na camada de consulta/UI (critério de aceite da Fase 1).
+const DATASETS: Record<string, string> = {
+  [HEALTH_CLIMATE_FILE]: "/data/gold/health_climate_daily/v1.0.0/uf=RO/data.parquet",
+  [DIM_STATION_FILE]: "/data/gold/dim_station/v1.0.0/uf=RO/data.parquet",
+};
 
 let registered = false;
 async function ensureDatasetsRegistered(): Promise<void> {
   if (registered) return;
   const db = await getDb();
-  await db.registerFileURL(
-    HEALTH_CLIMATE_FILE,
-    HEALTH_CLIMATE_PARQUET_URL,
-    duckdb.DuckDBDataProtocol.HTTP,
-    false,
+  await Promise.all(
+    Object.entries(DATASETS).map(([name, path]) =>
+      db.registerFileURL(
+        name,
+        new URL(path, window.location.origin).href,
+        duckdb.DuckDBDataProtocol.HTTP,
+        false,
+      ),
+    ),
   );
   registered = true;
 }

@@ -1,19 +1,30 @@
 import { useEffect, useRef } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { MapboxOverlay } from "@deck.gl/mapbox";
+import { ScatterplotLayer } from "@deck.gl/layers";
 import type { Metric } from "./types";
+
+export interface Station {
+  station_code: string;
+  station_name: string;
+  latitude: number;
+  longitude: number;
+}
 
 interface MapProps {
   values: Record<number, number>; // code_muni -> valor do indicador atual
   metric: Metric;
+  stations: Station[]; // camada deck.gl de estações INMET
   onSelectMuni: (codeMuni: number, nameMuni: string) => void;
 }
 
 const RO_CENTER: [number, number] = [-63.0, -10.9];
 
-export function Map({ values, metric, onSelectMuni }: MapProps) {
+export function Map({ values, metric, stations, onSelectMuni }: MapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
+  const overlayRef = useRef<MapboxOverlay | null>(null);
 
   // Inicializa o mapa uma única vez.
   useEffect(() => {
@@ -76,6 +87,12 @@ export function Map({ values, metric, onSelectMuni }: MapProps) {
       map.on("mouseleave", "municipios-fill", () => {
         map.getCanvas().style.cursor = "";
       });
+
+      // deck.gl interleaved: fica acima dos polígonos, abaixo de rótulos
+      // (não há rótulos no estilo mínimo do MVP, mas mantém o padrão certo).
+      const overlay = new MapboxOverlay({ interleaved: true, layers: [] });
+      overlayRef.current = overlay;
+      map.addControl(overlay as unknown as maplibregl.IControl);
     });
 
     return () => map.remove();
@@ -105,6 +122,25 @@ export function Map({ values, metric, onSelectMuni }: MapProps) {
       map.once("idle", applyValues);
     }
   }, [values, metric]);
+
+  // Camada de estações INMET — atualiza sem tocar nos polígonos de município.
+  useEffect(() => {
+    overlayRef.current?.setProps({
+      layers: [
+        new ScatterplotLayer<Station>({
+          id: "inmet-stations",
+          data: stations,
+          getPosition: (d) => [d.longitude, d.latitude],
+          getRadius: 6000,
+          getFillColor: [30, 90, 160, 200],
+          getLineColor: [255, 255, 255],
+          lineWidthMinPixels: 1,
+          stroked: true,
+          pickable: true,
+        }),
+      ],
+    });
+  }, [stations]);
 
   return <div ref={containerRef} style={{ width: "100%", height: "100%" }} />;
 }

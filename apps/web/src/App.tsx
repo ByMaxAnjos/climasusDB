@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
-import { Map } from "./Map";
+import { useTranslation } from "react-i18next";
+import { Map, type Station } from "./Map";
 import { TimeSeries } from "./TimeSeries";
-import { query, HEALTH_CLIMATE_FILE } from "./db";
+import { query, HEALTH_CLIMATE_FILE, DIM_STATION_FILE } from "./db";
 import type { HealthClimateRow, Metric } from "./types";
 import { METRICS } from "./types";
 
 export function App() {
+  const { t, i18n } = useTranslation();
   const [metric, setMetric] = useState<Metric>("deaths_total");
   const [mapValues, setMapValues] = useState<Record<number, number>>({});
   const [muniOptions, setMuniOptions] = useState<{ code_muni: number; name_muni: string }[]>([]);
   const [selectedMuni, setSelectedMuni] = useState<{ code: number; name: string } | null>(null);
   const [seriesRows, setSeriesRows] = useState<HealthClimateRow[]>([]);
+  const [stations, setStations] = useState<Station[]>([]);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
 
   // Carrega a lista de municípios uma vez (para o seletor) e testa a conexão DuckDB.
@@ -28,6 +31,15 @@ export function App() {
       }
     })();
   }, []);
+
+  // Estações INMET (camada deck.gl) — dataset independente, sem dado sintético.
+  useEffect(() => {
+    if (status !== "ready") return;
+    (async () => {
+      const rows = await query<Station>(`SELECT * FROM '${DIM_STATION_FILE}'`);
+      setStations(rows);
+    })();
+  }, [status]);
 
   // Recalcula o valor agregado por município (média do indicador no período) para colorir o mapa.
   useEffect(() => {
@@ -61,19 +73,21 @@ export function App() {
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh", fontFamily: "sans-serif" }}>
       <header style={{ padding: "10px 16px", borderBottom: "1px solid #ddd", display: "flex", gap: 16, alignItems: "center" }}>
-        <h1 style={{ fontSize: 18, margin: 0 }}>climasusDB — Atlas (protótipo, dados sintéticos)</h1>
+        <h1 style={{ fontSize: 18, margin: 0 }}>
+          {t("title")} <small>({t("subtitle")})</small>
+        </h1>
         <label>
-          Indicador:{" "}
+          {t("indicator")}:{" "}
           <select value={metric} onChange={(e) => setMetric(e.target.value as Metric)}>
             {METRICS.map((m) => (
               <option key={m.key} value={m.key}>
-                {m.label}
+                {t(`metric.${m.key}`)}
               </option>
             ))}
           </select>
         </label>
         <label>
-          Município:{" "}
+          {t("municipality")}:{" "}
           <select
             value={selectedMuni?.code ?? ""}
             onChange={(e) => {
@@ -89,13 +103,20 @@ export function App() {
             ))}
           </select>
         </label>
-        {status === "loading" && <span>Carregando motor de consultas local (DuckDB-WASM)…</span>}
-        {status === "error" && <span style={{ color: "#c0392b" }}>Erro ao consultar dados.</span>}
+        <label>
+          <select value={i18n.language} onChange={(e) => i18n.changeLanguage(e.target.value)}>
+            <option value="pt">PT</option>
+            <option value="en">EN</option>
+            <option value="es">ES</option>
+          </select>
+        </label>
+        {status === "loading" && <span>{t("loading")}</span>}
+        {status === "error" && <span style={{ color: "#c0392b" }}>{t("error")}</span>}
       </header>
 
       <div style={{ flex: 1, display: "flex", minHeight: 0 }}>
         <div style={{ flex: 2 }}>
-          <Map values={mapValues} metric={metric} onSelectMuni={handleSelectMuni} />
+          <Map values={mapValues} metric={metric} stations={stations} onSelectMuni={handleSelectMuni} />
         </div>
         <div style={{ flex: 1, padding: 16, borderLeft: "1px solid #ddd", overflowY: "auto" }}>
           <TimeSeries rows={seriesRows} metric={metric} muniLabel={selectedMuni?.name ?? null} />

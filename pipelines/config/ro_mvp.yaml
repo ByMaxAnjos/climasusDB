@@ -1,0 +1,33 @@
+# Configuração central do MVP climasusDB — Rondônia (RO)
+# Consumida por pipelines/_targets.R e pelos wrappers em pipelines/R/*.R
+
+uf: RO
+years: [2018, 2019, 2020, 2021, 2022, 2023]
+
+health:
+  system: "SIM-DO"
+  disease_group: "climate_sensitive_all" # ver .icd_disease_groups no climasus4r
+  time_unit: "day"
+
+climate:
+  temporal_strategy: "exact"
+  climate_vars: ["tair_dry_bulb_c", "tair_max_c", "tair_min_c", "rainfall_mm", "rh_mean_porc"]
+
+heatwaves:
+  methods: ["WHO", "WMO", "INMET"]
+  # Estações automáticas do INMET raramente cobrem a normal climatológica
+  # 1981-2010; baseline nulo usa o período completo disponível (2018-2023
+  # nesta config) como referência — trade-off necessário até haver série
+  # histórica mais longa.
+  baseline_start: ~
+  baseline_end: ~
+  percentile: 90
+
+gold:
+  version: "1.0.0" # diretório imutável: gold/{dataset}/v{version}/uf=RO/data.parquet
+  chunk_size: 100000 # row group size p/ leitura eficiente via DuckDB-WASM (HTTP range)
+
+paths:
+  bronze: "data/bronze"
+  silver: "data/silver"
+  public: "data/public"

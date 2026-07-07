@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import * as Plot from "@observablehq/plot";
 import type { HealthClimateRow, Metric } from "./types";
-import { METRICS } from "./types";
 
 interface TimeSeriesProps {
   rows: HealthClimateRow[];
@@ -10,6 +10,7 @@ interface TimeSeriesProps {
 }
 
 export function TimeSeries({ rows, metric, muniLabel }: TimeSeriesProps) {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -19,7 +20,7 @@ export function TimeSeries({ rows, metric, muniLabel }: TimeSeriesProps) {
 
     if (rows.length === 0) return;
 
-    const label = METRICS.find((m) => m.key === metric)?.label ?? metric;
+    const label = t(`metric.${metric}`);
 
     const plot = Plot.plot({
       width: container.clientWidth || 640,
@@ -35,12 +36,12 @@ export function TimeSeries({ rows, metric, muniLabel }: TimeSeriesProps) {
 
     container.appendChild(plot);
     return () => plot.remove();
-  }, [rows, metric]);
+  }, [rows, metric, t]);
 
   return (
     <div>
       <h3 style={{ margin: "0 0 8px 0", fontSize: 14 }}>
-        {muniLabel ? `Série temporal — ${muniLabel}` : "Selecione um município no mapa"}
+        {muniLabel ? t("time_series_title", { name: muniLabel }) : t("select_municipality")}
       </h3>
       <div ref={containerRef} />
     </div>
