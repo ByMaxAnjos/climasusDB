@@ -10,10 +10,15 @@ i18next
   .init({
     fallbackLng: "pt",
     supportedLngs: ["pt", "en", "es"],
-    ns: ["common"],
+    ns: ["common", "catalog", "docs", "featured", "charts", "groups"],
     defaultNS: "common",
     backend: { loadPath: "/locales/{{lng}}/{{ns}}.json" },
     interpolation: { escapeValue: false },
   });
+
+// Mantém <html lang> sincronizado com o idioma ativo (leitores de tela).
+i18next.on("languageChanged", (lng) => {
+  document.documentElement.lang = lng;
+});
 
 export default i18next;

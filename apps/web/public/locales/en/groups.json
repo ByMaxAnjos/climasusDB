@@ -1,0 +1,25 @@
+{
+  "categories": {
+    "biomes": "Biomes",
+    "hydro_climate": "Hydrography & Climate",
+    "health_agri_geo": "Health, Agriculture & Geopolitics"
+  },
+  "names": {
+    "amazonia_legal": "Legal Amazon",
+    "mata_atlantica": "Atlantic Forest",
+    "caatinga": "Caatinga",
+    "cerrado": "Cerrado",
+    "pantanal": "Pantanal",
+    "pampa": "Pampa",
+    "bacia_amazonia": "Amazon River Basin",
+    "bacia_sao_francisco": "São Francisco River Basin",
+    "bacia_parana": "Paraná River Basin",
+    "bacia_tocantins": "Tocantins-Araguaia Basin",
+    "semi_arido": "Semi-Arid Region",
+    "matopiba": "MATOPIBA",
+    "arco_desmatamento": "Deforestation Arc",
+    "dengue_hyperendemic": "Dengue Hyperendemic Area",
+    "sudene": "SUDENE Coverage Area",
+    "fronteira_brasil": "Border Strip"
+  }
+}

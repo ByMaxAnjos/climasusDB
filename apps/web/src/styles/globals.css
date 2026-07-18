@@ -1,3 +1,36 @@
+/* Tema adaptado do site climaSUS (Aurora) — mesma paleta/tipografia da marca,
+   sem as animações de marketing (hero, scroll-scrub) que não fazem sentido
+   numa ferramenta de dados. Fonte: climaSUS - Site (Aurora), tema v2. */
+:root {
+  --ink: #052e2b;
+  --ink-2: #063b33;
+  --ink-3: #0b5f4a;
+  --paper: #f7fbf8;
+  --paper-2: #ecf8f1;
+  --paper-3: #ffffff;
+  --muted: #5e7772;
+  --muted-d: #bfe2d7;
+  --rule: rgba(5, 46, 43, 0.1);
+  --rule-d: rgba(255, 255, 255, 0.24);
+
+  --health: #0e7a5f;
+  --health-2: #42d392;
+  --climate: #1d9bf0;
+  --climate-2: #6ae6f2;
+  --heat: #ff6b4a;
+  --heat-2: #ff9b72;
+  --air: #15b8a6;
+  --air-2: #7dead8;
+  --drought: #ffb84d;
+  --drought-2: #ffe08a;
+  --accent: #0e7a5f;
+
+  --shadow-soft: 0 10px 30px rgba(5, 46, 43, 0.08);
+  --shadow-lift: 0 20px 50px rgba(5, 46, 43, 0.14);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --radius: 20px;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -11,6 +44,287 @@ body,
 }
 
 body {
-  color: #1f2a24;
-  background: #fff;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Newsreader", Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+select,
+input[type="checkbox"] {
+  font-family: inherit;
+}
+
+select {
+  font-size: 14px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--rule);
+  background: var(--paper-3);
+  color: var(--ink);
+}
+
+/* ---------- marca ---------- */
+.brand {
+  font-family: "Newsreader", serif;
+  font-weight: 600;
+  font-size: 20px;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.brand .accent {
+  color: transparent;
+  background: linear-gradient(110deg, var(--health), var(--climate), var(--heat), var(--health));
+  background-size: 280% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: auroraText 9s ease-in-out infinite;
+}
+@keyframes auroraText {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* ---------- navegação ---------- */
+.app-nav {
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: saturate(160%) blur(16px);
+  -webkit-backdrop-filter: saturate(160%) blur(16px);
+  border-bottom: 1px solid var(--rule);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.nav-links {
+  display: flex;
+  gap: 6px;
+}
+.nav-link {
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  text-decoration: none;
+  transition: background 0.2s var(--ease), color 0.2s var(--ease);
+}
+.nav-link:hover {
+  background: var(--paper-2);
+  color: var(--ink);
+}
+.nav-link.active {
+  background: var(--ink);
+  color: #fff;
+}
+
+/* ---------- rótulos mono ---------- */
+.eyebrow {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* ---------- botões ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 20px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), background 0.2s var(--ease);
+}
+.btn-primary {
+  background: var(--ink);
+  color: #fff;
+  box-shadow: var(--shadow-soft);
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lift);
+}
+.btn-ghost {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--rule);
+  color: var(--ink);
+}
+.btn-ghost:hover {
+  background: var(--paper-2);
+}
+
+/* ---------- cartões ---------- */
+.card {
+  background: var(--paper-3);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+a.card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+a.card.card-media {
+  display: flex;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lift);
+}
+.card.disabled {
+  opacity: 0.55;
+}
+.card.disabled:hover {
+  transform: none;
+  box-shadow: var(--shadow-soft);
+}
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+/* cartão com imagem no topo (Catálogo/Aplicações) — sem padding no wrapper,
+   o conteúdo textual fica em .card-media__body. */
+.card-media {
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.card-media__img {
+  height: 116px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.95);
+}
+.card-media__img svg {
+  filter: drop-shadow(0 2px 3px rgba(5, 46, 43, 0.35));
+}
+.card-media__body {
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+.keyword-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 6px;
+}
+
+/* ---------- badges/pills ---------- */
+.badge {
+  display: inline-block;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+.badge-muted {
+  background: rgba(94, 119, 114, 0.12);
+  color: var(--muted);
+}
+.badge-warning {
+  background: rgba(255, 184, 77, 0.2);
+  color: #8a5a00;
+}
+.badge-accent {
+  background: rgba(14, 122, 95, 0.12);
+  color: var(--accent);
+}
+
+/* ---------- busca ---------- */
+.search-input {
+  width: 100%;
+  max-width: 420px;
+  font-size: 14px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--rule);
+  background: var(--paper-3);
+  color: var(--ink);
+  box-shadow: var(--shadow-soft);
+}
+.search-input::placeholder {
+  color: var(--muted);
+}
+
+/* ---------- páginas de conteúdo ---------- */
+.page {
+  padding: 32px clamp(20px, 4vw, 56px);
+  width: 100%;
+  margin: 0 auto;
+  overflow-y: auto;
+  flex: 1;
+}
+.page-lede {
+  color: var(--muted);
+  font-size: 15px;
+  max-width: 640px;
+}
+.page a {
+  color: var(--health);
+}
+
+.data-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.data-table th,
+.data-table td {
+  text-align: left;
+  padding: 6px 12px 6px 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: 14px;
+}
+.data-table th {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.code-block {
+  background: var(--paper-2);
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12px;
+  overflow-x: auto;
 }

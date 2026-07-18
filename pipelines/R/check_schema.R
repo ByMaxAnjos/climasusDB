@@ -3,13 +3,16 @@
 # schema em docs/DATA_MODEL.md — usado pelo scaffold sintético (Fase 0) e pelo
 # real (Fase 1) para garantir que ambos sejam intercambiáveis pelo frontend.
 #
-# Uso: Rscript pipelines/R/check_schema.R <path-para-data.parquet>
+# Uso: Rscript pipelines/R/check_schema.R [path-para-data.parquet]
+#   Sem argumento: valida TODAS as partições de health_climate_daily
+#   encontradas em data/public/gold (todas as versões/UFs).
 
 suppressPackageStartupMessages(library(arrow))
 
 args <- commandArgs(trailingOnly = TRUE)
-path <- if (length(args) >= 1) args[[1]] else
-  "data/public/gold/health_climate_daily/v0.1.0/uf=RO/data.parquet"
+paths <- if (length(args) >= 1) args[[1]] else
+  Sys.glob("data/public/gold/health_climate_daily/v*/uf=*/data.parquet")
+if (length(paths) == 0) stop("Nenhum Parquet de health_climate_daily encontrado em data/public/gold.")
 
 expected <- c(
   code_muni = "int32", name_muni = "string", date = "date32[day]",
@@ -18,27 +21,33 @@ expected <- c(
   precip = "double", rh = "double"
 )
 
-ds <- arrow::open_dataset(path)
-actual <- setNames(
-  vapply(ds$schema$fields, function(f) f$type$ToString(), character(1)),
-  vapply(ds$schema$fields, function(f) f$name, character(1))
-)
+check_one <- function(path) {
+  ds <- arrow::open_dataset(path)
+  actual <- setNames(
+    vapply(ds$schema$fields, function(f) f$type$ToString(), character(1)),
+    vapply(ds$schema$fields, function(f) f$name, character(1))
+  )
 
-missing <- setdiff(names(expected), names(actual))
-if (length(missing) > 0) {
-  stop(sprintf("Colunas obrigatórias ausentes em %s: %s", path, paste(missing, collapse = ", ")))
+  missing <- setdiff(names(expected), names(actual))
+  if (length(missing) > 0) {
+    stop(sprintf("Colunas obrigatórias ausentes em %s: %s", path, paste(missing, collapse = ", ")))
+  }
+
+  mismatched <- names(expected)[expected != actual[names(expected)]]
+  if (length(mismatched) > 0) {
+    stop(sprintf(
+      "Tipo divergente do contrato (docs/DATA_MODEL.md) em %s: %s",
+      path,
+      paste(sprintf("%s (esperado %s, veio %s)", mismatched, expected[mismatched], actual[mismatched]), collapse = "; ")
+    ))
+  }
+
+  meta <- ds$schema$metadata[["climasus_meta"]]
+  if (is.null(meta)) stop(sprintf("Parquet sem climasus_meta embutido: %s", path))
 }
 
-mismatched <- names(expected)[expected != actual[names(expected)]]
-if (length(mismatched) > 0) {
-  stop(sprintf(
-    "Tipo divergente do contrato (docs/DATA_MODEL.md) em %s: %s",
-    path,
-    paste(sprintf("%s (esperado %s, veio %s)", mismatched, expected[mismatched], actual[mismatched]), collapse = "; ")
-  ))
-}
-
-meta <- ds$schema$metadata[["climasus_meta"]]
-if (is.null(meta)) stop(sprintf("Parquet sem climasus_meta embutido: %s", path))
-
-cat(sprintf("OK: %s respeita o contrato de schema (%d colunas, climasus_meta presente).\n", path, length(expected)))
+for (path in paths) check_one(path)
+cat(sprintf(
+  "OK: %d partição(ões) respeitam o contrato de schema (%d colunas, climasus_meta presente).\n",
+  length(paths), length(expected)
+))

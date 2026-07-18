@@ -1,0 +1,25 @@
+{
+  "categories": {
+    "biomes": "Biomas",
+    "hydro_climate": "Hidrografia & Clima",
+    "health_agri_geo": "Saúde, Agricultura & Geopolítica"
+  },
+  "names": {
+    "amazonia_legal": "Amazônia Legal",
+    "mata_atlantica": "Mata Atlântica",
+    "caatinga": "Caatinga",
+    "cerrado": "Cerrado",
+    "pantanal": "Pantanal",
+    "pampa": "Pampa",
+    "bacia_amazonia": "Bacia do Amazonas",
+    "bacia_sao_francisco": "Bacia do São Francisco",
+    "bacia_parana": "Bacia do Paraná",
+    "bacia_tocantins": "Bacia do Tocantins-Araguaia",
+    "semi_arido": "Semiárido",
+    "matopiba": "MATOPIBA",
+    "arco_desmatamento": "Arco do Desmatamento",
+    "dengue_hyperendemic": "Hiperendemia de Dengue",
+    "sudene": "Área de Atuação da SUDENE",
+    "fronteira_brasil": "Faixa de Fronteira"
+  }
+}

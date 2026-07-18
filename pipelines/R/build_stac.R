@@ -15,13 +15,13 @@ suppressPackageStartupMessages({
   library(cli)
 })
 
-gridded_datasets <- c("era5_daily", "chirps_daily") # nomes usados por make_gridded_gold()
+gridded_datasets <- c("env_era5_daily", "env_chirps_daily", "env_prodes_daily", "env_pollution_cams_daily") # nomes usados por make_gridded_gold(), ver pipelines/R/run_gridded.R
 
 find_gridded_files <- function(public_dir, dataset) {
   Sys.glob(file.path(public_dir, "gold", dataset, "v*", "uf=*", "data.parquet"))
 }
 
-build_stac_item <- function(path, dataset, version, uf) {
+build_stac_item <- function(path, rel_path, dataset, version, uf) {
   ds <- arrow::open_dataset(path)
   meta_json <- ds$schema$metadata[["climasus_meta"]]
   meta <- if (!is.null(meta_json)) jsonlite::fromJSON(meta_json, simplifyVector = TRUE) else list()
@@ -37,7 +37,9 @@ build_stac_item <- function(path, dataset, version, uf) {
       version = version
     ),
     assets = list(
-      data = list(href = path, type = "application/x-parquet", title = "Parquet")
+      # href relativo a data/public (mesma convenção do datapackage.json) —
+      # um caminho local de filesystem seria inservível via HTTP/GCS.
+      data = list(href = rel_path, type = "application/x-parquet", title = "Parquet")
     ),
     links = list()
   )
@@ -78,7 +80,8 @@ build_stac <- function(public_dir) {
       n <- length(parts)
       version <- sub("^v", "", parts[n - 2])
       uf <- sub("^uf=", "", parts[n - 1])
-      build_stac_item(path, dataset, version, uf)
+      rel_path <- sub(paste0("^", public_dir, "/?"), "", path)
+      build_stac_item(path, rel_path, dataset, version, uf)
     })
 
     coll_dir <- file.path(stac_dir, "collections", dataset, "items")

@@ -33,11 +33,16 @@ for (uf in ufs) {
   result <- tryCatch({
     bronze_sim   <- get_bronze_sim(cfg)
     bronze_inmet <- get_bronze_inmet(cfg)
+    # sus_climate_fill_inmet() ANTES de qualquer consumo da série INMET —
+    # silver, mart e heatwaves usam a versão preenchida, não o bronze bruto
+    # (ver comentário em bronze.R::fill_bronze_inmet()).
+    filled_inmet <- fill_bronze_inmet(bronze_inmet, cfg)
     silver_sim   <- make_silver_sim(bronze_sim, cfg)
-    silver_inmet <- make_silver_inmet(bronze_inmet, cfg)
+    silver_inmet <- make_silver_inmet(filled_inmet, cfg)
     health_daily <- make_health_daily(silver_sim, cfg)
     make_health_climate_mart(health_daily, silver_inmet, cfg)
-    make_heatwave_events(bronze_inmet, cfg)
+    make_heatwave_events(filled_inmet, cfg)
+    make_dim_station(cfg) # sem rede (station_meta.parquet embutido) — faltava aqui, só em _targets.R (RO)
     "ok"
   }, error = function(e) {
     cli::cli_alert_danger("UF {uf} falhou: {conditionMessage(e)}")
@@ -48,4 +53,26 @@ for (uf in ufs) {
 }
 
 build_catalog(cfg_base$paths$public)
+
+# Força o contrato de docs/DATA_MODEL.md sobre tudo que acabou de ser escrito.
+if (system2("Rscript", "pipelines/R/check_schema.R") != 0) {
+  cli::cli_alert_danger("Contrato de schema violado — ver saída de check_schema.R acima.")
+}
+
+# run_national.R só baixa saúde/clima (SIM-DO + INMET); a malha de
+# municípios (PMTiles) é gerada à parte por generate_pmtiles.R (`make
+# tiles-br`, requer rede + tippecanoe) e é o que Map.tsx usa para renderizar
+# o mapa nacional — dados de saúde/clima sem PMTiles = atlas sem mapa
+# navegável. Checagem simples: arquivo existe e não está vazio.
+pmtiles_path <- cfg_base$tiles$output
+pmtiles_ok <- file.exists(pmtiles_path) && file.info(pmtiles_path)$size > 0
+if (pmtiles_ok) {
+  size_mb <- round(file.info(pmtiles_path)$size / 1e6, 1)
+  cli::cli_alert_success("PMTiles nacional ativo: {pmtiles_path} ({size_mb} MB).")
+} else {
+  cli::cli_alert_warning(
+    "PMTiles nacional ausente/vazio em {pmtiles_path} — o atlas não vai renderizar municípios até rodar: make tiles-br"
+  )
+}
+
 cli::cli_alert_success("Pipeline nacional concluído.")

@@ -13,3 +13,13 @@ apps/web/public/data
 _targets/
 __pycache__/
 *.pyc
+# Artefatos geráveis (make geo-br / tiles-br) — grandes demais para git
+apps/web/public/geo/municipios_br.geojson
+apps/web/public/geo/estados_br.geojson
+apps/web/public/geo/regioes_br.geojson
+apps/web/public/tiles/
+# Saídas de análise/experimentação
+figures/
+tables/
+pipelines/R/scratch/
+docs/manuscript/*.docx

@@ -44,11 +44,61 @@ get_bronze_sim <- function(cfg) {
   )
 }
 
+#' Lê SIM-DO já baixado por inst/scripts/create_national_database.R (do
+#' pacote climasus4r) em vez de baixar via rede — usado por
+#' run_national_from_cache.R quando o bronze já existe localmente (ex.:
+#' copiado de outra máquina). Layout Hive dessa saída (diferente do cache
+#' interno do climasus4r, que é um diretório plano de `{cache_key}.parquet`):
+#'   {cache_root}/sim/DO/uf=XX/year=YYYY/data.parquet
+#' Lê ano a ano e faz bind_rows() pelo mesmo motivo de get_bronze_sim(): o
+#' layout de colunas do DATASUS muda entre releases anuais.
+get_bronze_sim_from_cache <- function(cfg, cache_root) {
+  per_year <- lapply(cfg$years, function(yr) {
+    path <- file.path(cache_root, "sim", "DO", paste0("uf=", cfg$uf), paste0("year=", yr), "data.parquet")
+    if (!file.exists(path)) {
+      cli::cli_alert_warning("Sem cache local para uf={cfg$uf} ano={yr} em {path} — pulando (ver manifest.csv)")
+      return(NULL)
+    }
+    arrow::read_parquet(path)
+  })
+  per_year <- Filter(Negate(is.null), per_year)
+  if (length(per_year) == 0) {
+    cli::cli_abort("Nenhum ano em cache local para uf={cfg$uf} (esperado em {cache_root}/sim/DO/uf={cfg$uf}/)")
+  }
+
+  combined <- dplyr::bind_rows(per_year)
+  combined <- climasus4r:::new_climasus_df(combined, list(system = cfg$health$system, stage = "import"))
+  climasus4r::sus_meta(
+    combined,
+    add_history = sprintf(
+      "Loaded %d yearly file(s) from local DATASUS cache (%s), no network — see create_national_database.R",
+      length(per_year), cache_root
+    )
+  )
+}
+
 get_bronze_inmet <- function(cfg) {
   climasus4r::sus_climate_inmet(
     years     = cfg$years,
     uf        = cfg$uf,
     cache_dir = file.path(cfg$paths$bronze, "inmet"),
     parallel  = FALSE
+  )
+}
+
+# Estações automáticas do INMET falham com frequência (sensor, transmissão,
+# manutenção) — sem preenchimento, uma fração grande do mart final fica com
+# clima ausente (ver docs/PLANO.md, limitação conhecida do dataset RO:
+# ~49% NA com só 7 estações). sus_climate_fill_inmet() imputa por XGBoost
+# station-wise sobre a saída de sus_climate_inmet() (bronze_inmet), antes de
+# qualquer coisa consumir a série — silver, mart e detecção de ondas de
+# calor devem receber o resultado desta função, não o bronze bruto.
+# parallel=FALSE pelo mesmo motivo do bug #5 (cgroup CPU quota rejeita
+# workers do `parallelly` em containers, mesmo com CPUs livres).
+fill_bronze_inmet <- function(bronze_inmet, cfg) {
+  climasus4r::sus_climate_fill_inmet(
+    bronze_inmet,
+    target_var = cfg$climate$climate_vars,
+    parallel   = FALSE
   )
 }

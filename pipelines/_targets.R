@@ -17,15 +17,18 @@ list(
   # ---- Bronze (rede: DATASUS + INMET) ----------------------------------
   tar_target(bronze_sim, get_bronze_sim(cfg)),
   tar_target(bronze_inmet, get_bronze_inmet(cfg)),
+  # Regra de bronze.R: silver, mart e heatwaves consomem o INMET preenchido,
+  # nunca o bronze cru (senão ~49% NA de clima).
+  tar_target(filled_inmet, fill_bronze_inmet(bronze_inmet, cfg)),
 
   # ---- Silver ------------------------------------------------------------
   tar_target(silver_sim, make_silver_sim(bronze_sim, cfg)),
-  tar_target(silver_inmet, make_silver_inmet(bronze_inmet, cfg)),
+  tar_target(silver_inmet, make_silver_inmet(filled_inmet, cfg)),
 
   # ---- Gold ---------------------------------------------------------------
   tar_target(health_daily, make_health_daily(silver_sim, cfg)),
   tar_target(gold_mart, make_health_climate_mart(health_daily, silver_inmet, cfg)),
-  tar_target(gold_heatwaves, make_heatwave_events(bronze_inmet, cfg)),
+  tar_target(gold_heatwaves, make_heatwave_events(filled_inmet, cfg)),
   tar_target(gold_dim_station, make_dim_station(cfg)), # sem rede (station_meta.parquet embutido)
 
   # ---- Catálogo (sempre por último) --------------------------------------

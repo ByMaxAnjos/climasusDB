@@ -1,0 +1,43 @@
+{
+  "index_title": "Documentação",
+  "pipeline_link_intro": "Para a metodologia completa do pipeline (importação, modelagem estatística, tutoriais temáticos e estudos de caso em R), veja a documentação do pacote",
+  "pipeline_link_label": "climasus4r (pkgdown)",
+  "apps_title": "Aplicações",
+  "coming_soon": "dados em breve",
+  "app_unavailable": "Esta aplicação ainda não tem dataset publicado.",
+  "read_case_study": "Ler o estudo de caso →",
+  "page_not_found": "Página não encontrada.",
+  "page": {
+    "data-model": {
+      "title": "Modelo de dados & proveniência",
+      "body": [
+        "Todo dataset Gold publicado em data/public/gold/ é um Parquet com metadados de proveniência embutidos no schema Arrow, sob a chave \"climasus_meta\" (gravados por climasus4r::write_parquet_climasus()). Esses metadados incluem o sistema DATASUS de origem, o estágio do pipeline, o tipo de agregação e um histórico de processamento.",
+        "Versionamento segue vX.Y.Z por dataset (ex. health_climate_daily/v1.0.0). O caminho é sempre gold/{dataset}/v{versão}/uf={uf}/data.parquet — o schema é idêntico entre versões sintéticas e reais, para que nada no frontend precise mudar quando um dataset passa de protótipo para dado real.",
+        "O arquivo data/public/catalog.json lista todos os datasets publicados; cada um tem um datapackage.json (padrão Frictionless Data) irmão com o schema completo e os mesmos metadados de proveniência."
+      ]
+    },
+    "querying": {
+      "title": "Consultando via DuckDB-WASM",
+      "body": [
+        "O climasusDB não tem backend: o navegador roda uma instância do DuckDB compilada para WebAssembly e consulta os arquivos Parquet publicados diretamente via HTTP range requests — só os bytes necessários para cada consulta são baixados.",
+        "Os mesmos arquivos Parquet podem ser abertos fora da plataforma, sem nenhuma dependência do climasusDB: com o DuckDB CLI (SELECT * FROM read_parquet('URL')), com pandas/pyarrow em Python, ou com arrow::read_parquet() em R.",
+        "Exemplo de consulta usada pelo Explorar: SELECT code_muni, avg(tmax) FROM health_climate_daily GROUP BY code_muni."
+      ]
+    },
+    "catalog-contract": {
+      "title": "Contrato do catálogo",
+      "body": [
+        "catalog.json garante: nome do dataset, versão mais recente, lista de versões disponíveis, flag de dado sintético, caminho relativo do Parquet e contagem de linhas. datapackage.json garante o schema de colunas e os metadados climasus_meta completos.",
+        "Datasets tabulares (como health_climate_daily) usam esse contrato Frictionless Data, não STAC. O catálogo STAC (build_stac.R) é reservado para datasets raster em grade (ERA5, CHIRPS) quando esses forem publicados — evita duplicar dois sistemas de catalogação para o mesmo tipo de dado tabular."
+      ]
+    },
+    "heat-cardio": {
+      "title": "Calor e mortalidade em Rondônia",
+      "body": [
+        "Este tema aplica ao dado publicado de Rondônia a mesma abordagem metodológica de um estudo de caso do climasus4r sobre mortalidade cardiovascular em idosos e ondas de calor: detectar eventos de onda de calor (métodos OMS/OMM) a partir de séries de temperatura das estações INMET e relacioná-los à série diária de óbitos por município.",
+        "Os datasets publicados que sustentam este tema são health_climate_daily (óbitos e clima diários por município, 2018–2023) e heatwave_events (eventos de onda de calor detectados nas estações INMET de RO, com índice de severidade e classe de intensidade).",
+        "Para a metodologia estatística completa (DLNM, carga atribuível), veja o tutorial de modelagem avançada correspondente na documentação do climasus4r."
+      ]
+    }
+  }
+}

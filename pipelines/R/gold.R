@@ -87,8 +87,12 @@ muni_points_ro <- function(cfg) {
   sf::st_as_sf(muni, coords = c("lon", "lat"), crs = 4674, remove = FALSE)
 }
 
-#' Junta clima ao agregado de saúde e escreve o mart final (schema DATA_MODEL.md).
-make_health_climate_mart <- function(health_daily, silver_inmet, cfg) {
+#' Junta o agregado de saúde (município-dia, código DATASUS) à geometria de
+#' município e devolve um climasus_df sf pronto para sus_climate_aggregate()
+#' — passo comum a QUALQUER temporal_strategy (extraído daqui porque
+#' pipelines/R/dlnm.R precisa do mesmo pareamento espacial para gerar a
+#' série "distributed_lag", não só a "exact" do mart publicado).
+build_health_sf <- function(health_daily, cfg) {
   muni_sf <- muni_points_ro(cfg) |> dplyr::select(code_muni_datasus, code_muni, name_muni)
 
   # health_daily$code_muni veio de resolve_geo_col_name() == código DATASUS
@@ -119,10 +123,15 @@ make_health_climate_mart <- function(health_daily, silver_inmet, cfg) {
     dplyr::select(-code_muni_datasus) |>
     sf::st_as_sf()
 
-  health_climasus <- climasus4r:::new_climasus_df(
+  climasus4r:::new_climasus_df(
     health_sf,
     list(system = cfg$health$system, stage = "spatial", type = "munic")
   )
+}
+
+#' Junta clima ao agregado de saúde e escreve o mart final (schema DATA_MODEL.md).
+make_health_climate_mart <- function(health_daily, silver_inmet, cfg) {
+  health_climasus <- build_health_sf(health_daily, cfg)
 
   joined <- climasus4r::sus_climate_aggregate(
     health_data       = health_climasus,

@@ -1,0 +1,42 @@
+{
+  "heat_cardio": {
+    "title": "Heat & Cardiovascular Health",
+    "desc": "Heatwaves and cardiovascular mortality, with real published data for Rondônia.",
+    "keywords": ["heat", "cardiovascular", "elderly", "heatwaves"]
+  },
+  "cold_resp": {
+    "title": "Cold & Respiratory Health",
+    "desc": "Coldwaves and respiratory hospitalizations.",
+    "keywords": ["cold", "respiratory", "hospitalizations"]
+  },
+  "vector_borne": {
+    "title": "Vector-Borne Disease & Climate",
+    "desc": "Dengue, zika, chikungunya, and malaria vs. precipitation and temperature.",
+    "keywords": ["dengue", "zika", "chikungunya", "malaria"]
+  },
+  "resp_air_quality": {
+    "title": "Respiratory Health & Air Quality",
+    "desc": "Respiratory disease and air pollution.",
+    "keywords": ["respiratory", "air quality", "pollution"]
+  },
+  "bioclimatic_indices": {
+    "title": "Bioclimatic Indices",
+    "desc": "Heat/cold stress indicators for public health.",
+    "keywords": ["bioclimatic", "thermal stress", "indices"]
+  },
+  "climate_health_integration": {
+    "title": "Climate-Health Data Integration",
+    "desc": "Temporal alignment methods between INMET stations and health data.",
+    "keywords": ["INMET", "temporal aggregation", "data integration"]
+  },
+  "vulnerability": {
+    "title": "Socioeconomic & Climate Vulnerability",
+    "desc": "Vulnerability indices combining climate and socioeconomic indicators.",
+    "keywords": ["vulnerability", "socioeconomic", "IBGE"]
+  },
+  "waterborne": {
+    "title": "Water-Related & Infectious Disease",
+    "desc": "Diarrheal disease, leptospirosis, and other climate-related waterborne disease.",
+    "keywords": ["waterborne", "diarrheal", "leptospirosis"]
+  }
+}

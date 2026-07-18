@@ -1,0 +1,81 @@
+{
+  "title": "Catálogo de Datos",
+  "loading": "Cargando catálogo…",
+  "error": "Error al cargar el catálogo.",
+  "version": "Versión",
+  "rows": "Filas",
+  "synthetic": "Sintético",
+  "filtered_by_tag": "Filtrado por el tema \"{{tag}}\"",
+  "clear_filter": "quitar filtro",
+  "download_parquet": "Descargar Parquet",
+  "license": "Licencia",
+  "coverage": "Cobertura",
+  "schema": "Schema",
+  "column": "Columna",
+  "type": "Tipo",
+  "description": "Descripción",
+  "pipeline_code": "Código / Pipeline",
+  "code_not_available": "Aún no disponible.",
+  "provenance": "Procedencia (climasus_meta)",
+  "search_placeholder": "Buscar por nombre o palabra clave…",
+  "no_results": "Ningún dataset encontrado.",
+  "format": "Formato",
+  "keywords": "Palabras clave",
+  "dataset": {
+    "dim_station": {
+      "title": "Estaciones Meteorológicas",
+      "desc": "Metadatos de las estaciones INMET usadas en la climatología de Rondônia: código, nombre, latitud y longitud.",
+      "keywords": ["INMET", "estaciones", "geolocalización"]
+    },
+    "health_climate_daily": {
+      "title": "Salud & Clima Diario",
+      "desc": "Serie diaria de muertes en grupos climáticamente sensibles y variables climáticas (temperatura, precipitación, humedad) por municipio de Rondônia, 2018–2023.",
+      "keywords": ["mortalidad", "temperatura", "precipitación", "municipio", "serie temporal"]
+    },
+    "heatwave_events": {
+      "title": "Eventos de Ola de Calor",
+      "desc": "Eventos de ola de calor detectados en las estaciones INMET de RO (métodos OMS/OMM), con duración, severidad y clase de intensidad.",
+      "keywords": ["olas de calor", "OMS/OMM", "severidad", "extremos climáticos"]
+    },
+    "health_climate_distributed_lag": {
+      "title": "Salud & Clima — Matriz de Rezago",
+      "desc": "Serie salud-clima con historial de exposición rezagada de 21 días, insumo para modelado de riesgo rezagado (DLNM).",
+      "keywords": ["DLNM", "rezago", "modelado", "exposición rezagada"]
+    },
+    "dlnm_exposure_response": {
+      "title": "DLNM — Riesgo x Temperatura",
+      "desc": "Curva de riesgo relativo acumulado en función de la temperatura, por estado, salida del modelo DLNM.",
+      "keywords": ["DLNM", "riesgo relativo", "temperatura", "modelado"]
+    },
+    "dlnm_lag_response": {
+      "title": "DLNM — Riesgo x Rezago",
+      "desc": "Efecto del riesgo relativo por día de rezago (0 a 21 días), en la temperatura del percentil 75, por estado.",
+      "keywords": ["DLNM", "riesgo relativo", "rezago", "modelado"]
+    },
+    "dlnm_surface": {
+      "title": "DLNM — Superficie de Riesgo",
+      "desc": "Superficie bidimensional de riesgo relativo (temperatura x rezago), por estado.",
+      "keywords": ["DLNM", "superficie", "heatmap", "modelado"]
+    },
+    "env_era5_daily": {
+      "title": "Clima en Grilla — ERA5-Land",
+      "desc": "Temperatura y precipitación diaria por municipio a partir de la reanálisis ERA5-Land (ECMWF), complementaria al INMET.",
+      "keywords": ["ERA5", "reanálisis", "temperatura", "precipitación", "grilla"]
+    },
+    "env_chirps_daily": {
+      "title": "Lluvia en Grilla — CHIRPS",
+      "desc": "Precipitación diaria por municipio a partir de CHIRPS v2.0 (satélite + estaciones, ~5km).",
+      "keywords": ["CHIRPS", "precipitación", "satélite", "grilla"]
+    },
+    "env_prodes_daily": {
+      "title": "Deforestación — PRODES",
+      "desc": "Área de deforestación anual por municipio en los 6 biomas monitoreados por PRODES/INPE.",
+      "keywords": ["PRODES", "deforestación", "INPE", "bioma"]
+    },
+    "env_pollution_cams_daily": {
+      "title": "Contaminación del Aire — CAMS",
+      "desc": "Concentración diaria de PM2.5 y PM10 por municipio, reanálisis CAMS (Copernicus).",
+      "keywords": ["CAMS", "contaminación del aire", "PM2.5", "PM10"]
+    }
+  }
+}

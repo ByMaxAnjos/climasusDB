@@ -1,7 +1,9 @@
 {
-  "title": "climasusDB — Atlas",
-  "subtitle": "Protótipo (dados sintéticos)",
+  "title": "climasusDB",
   "indicator": "Indicador",
+  "region": "Região",
+  "region_ibge": "Região (IBGE)",
+  "state": "Estado",
   "municipality": "Município",
   "loading": "Carregando motor de consultas local (DuckDB-WASM)…",
   "error": "Erro ao consultar dados.",
@@ -10,7 +12,16 @@
   "metric": {
     "deaths_total": "Óbitos (grupos climate-sensitive)",
     "tmax": "Temperatura máxima (°C)",
-    "precip": "Precipitação (mm)"
+    "precip": "Precipitação (mm)",
+    "dlnm_rr": "Risco relativo (DLNM, calor)"
   },
-  "stations": "Estações INMET"
+  "stations": "Estações INMET",
+  "language": "Idioma",
+  "date_axis": "data",
+  "nav": {
+    "explore": "Explorar",
+    "catalog": "Catálogo de Dados",
+    "apps": "Aplicações",
+    "docs": "Documentação"
+  }
 }

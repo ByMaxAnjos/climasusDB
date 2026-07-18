@@ -24,13 +24,24 @@ health:
 climate:
   temporal_strategy: "exact"
   climate_vars: ["tair_dry_bulb_c", "tair_max_c", "tair_min_c", "rainfall_mm", "rh_mean_porc"]
-  gridded_sources: ["era5", "chirps"] # via sus_grid_era5()/sus_grid_chirps() — sem API key
+  # via sus_grid_era5()/sus_grid_chirps()/sus_grid_prodes()/sus_grid_pollution_cams()
+  # — sem API key. Lido por pipelines/R/run_gridded.R (Fase 3, trilha A).
+  gridded_sources: ["era5", "chirps", "prodes", "pollution_cams"]
 
 heatwaves:
   methods: ["WHO", "WMO", "INMET"]
   baseline_start: ~
   baseline_end: ~
   percentile: 90
+
+# Fase 2b — indicador de risco relativo (DLNM), ver pipelines/R/dlnm.R e
+# pipelines/R/run_dlnm.R. Um modelo por UF (não por município — a maioria
+# dos municípios tem óbitos/dia insuficientes para um DLNM estável).
+dlnm:
+  climate_var: "tair_dry_bulb_c" # temperatura média diária — variável canônica em DLNM de mortalidade
+  lag_days: 21 # Gasparrini et al. 2015 (desfechos cardiorrespiratórios)
+  outcome_col: "deaths_total"
+  family: "quasipoisson"
 
 gold:
   version: "1.0.0"

@@ -1,0 +1,40 @@
+{
+  "tabs": {
+    "timeseries": "Série temporal",
+    "comparison": "Comparação",
+    "seasonality": "Sazonalidade",
+    "dlnm_overall": "Risco x temperatura",
+    "dlnm_lag": "Risco x defasagem",
+    "dlnm_surface": "Superfície"
+  },
+  "comparison_title": "Top municípios — {{scope}}",
+  "seasonality_title": "Sazonalidade mensal — {{name}}",
+  "seasonality_hint": "Selecione um município no mapa para ver a sazonalidade mensal.",
+  "brazil_scope": "Brasil",
+  "no_data": "Sem dados para esta seleção.",
+  "how_to_interpret": "Como interpretar",
+  "months": ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"],
+  "export": {
+    "csv": "Baixar CSV",
+    "xlsx": "Baixar Excel",
+    "png": "Baixar PNG"
+  },
+  "dlnm": {
+    "exposure_axis": "Temperatura (°C)",
+    "rr_axis": "Risco relativo",
+    "log_rr_axis": "log(RR)",
+    "lag_axis": "Defasagem (dias)",
+    "overall_title": "Risco relativo x temperatura — {{name}}",
+    "lag_title": "Risco relativo x defasagem (no p75) — {{name}}",
+    "surface_title": "Superfície temperatura x defasagem — {{name}}",
+    "autocorr_warning": "⚠ Este modelo (UF) apresentou autocorrelação residual significativa — trate o intervalo de confiança como aproximado, não como estimativa estatisticamente definitiva. Ver docs/DATA_MODEL.md."
+  },
+  "interpret": {
+    "timeseries": "Cada ponto é o valor do indicador em um dia. Passe o cursor sobre a linha para ver o valor exato. Picos e tendências ao longo do tempo podem indicar eventos climáticos (ondas de calor/frio) ou sazonalidade.",
+    "comparison": "Municípios ordenados do maior para o menor valor (top 15) dentro da região/estado selecionado. Útil para identificar outliers — municípios com valores muito acima da média do entorno.",
+    "seasonality": "Média (ou soma, para óbitos) do indicador por mês, considerando todos os anos disponíveis no município selecionado. Ajuda a identificar padrões sazonais, como aumento de temperatura em set-out ou de precipitação na estação chuvosa.",
+    "dlnm_overall": "Risco relativo acumulado (todos os lags somados) em função da temperatura, para toda a UF do município selecionado — não uma estimativa município-específica. RR=1 (linha tracejada) é a referência (mediana histórica da UF). A faixa sombreada é o intervalo de confiança de 95%; os pontos marcam os percentis 25/50/75/90/95/99 da temperatura observada.",
+    "dlnm_lag": "Risco relativo isolado de cada dia de defasagem (0 a 21 dias após a exposição), na temperatura do percentil 75 da UF. Mostra quantos dias depois de um dia quente o risco de óbito aparece — útil para saber se o efeito é imediato ou tardio.",
+    "dlnm_surface": "Mapa de calor combinando temperatura (eixo vertical) e defasagem (eixo horizontal): vermelho = risco elevado (log RR > 0), azul = risco reduzido (log RR < 0) naquela combinação. Dá a visão completa de onde na grade temperatura x tempo o efeito é mais forte."
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "title": "Catálogo de Dados",
+  "loading": "Carregando catálogo…",
+  "error": "Erro ao carregar o catálogo.",
+  "version": "Versão",
+  "rows": "Linhas",
+  "synthetic": "Sintético",
+  "filtered_by_tag": "Filtrado pelo tema \"{{tag}}\"",
+  "clear_filter": "limpar filtro",
+  "download_parquet": "Baixar Parquet",
+  "license": "Licença",
+  "coverage": "Cobertura",
+  "schema": "Schema",
+  "column": "Coluna",
+  "type": "Tipo",
+  "description": "Descrição",
+  "pipeline_code": "Código / Pipeline",
+  "code_not_available": "Ainda não disponível.",
+  "provenance": "Proveniência (climasus_meta)",
+  "search_placeholder": "Buscar por nome ou palavra-chave…",
+  "no_results": "Nenhum dataset encontrado.",
+  "format": "Formato",
+  "keywords": "Palavras-chave",
+  "dataset": {
+    "dim_station": {
+      "title": "Estações Meteorológicas",
+      "desc": "Metadados das estações INMET usadas na climatologia de Rondônia: código, nome, latitude e longitude.",
+      "keywords": ["INMET", "estações", "geolocalização"]
+    },
+    "health_climate_daily": {
+      "title": "Saúde & Clima Diário",
+      "desc": "Série diária de óbitos em grupos climate-sensitive e variáveis climáticas (temperatura, precipitação, umidade) por município de Rondônia, 2018–2023.",
+      "keywords": ["mortalidade", "temperatura", "precipitação", "município", "série temporal"]
+    },
+    "heatwave_events": {
+      "title": "Eventos de Onda de Calor",
+      "desc": "Eventos de onda de calor detectados nas estações INMET de RO (métodos OMS/OMM), com duração, severidade e classe de intensidade.",
+      "keywords": ["ondas de calor", "OMS/OMM", "severidade", "extremos climáticos"]
+    },
+    "health_climate_distributed_lag": {
+      "title": "Saúde & Clima — Defasagem",
+      "desc": "Série saúde-clima com histórico de exposição dos últimos 21 dias (matriz de lag), insumo para modelagem de risco defasado (DLNM).",
+      "keywords": ["DLNM", "lag", "modelagem", "exposição defasada"]
+    },
+    "dlnm_exposure_response": {
+      "title": "DLNM — Risco x Temperatura",
+      "desc": "Curva de risco relativo cumulativo em função da temperatura, por UF, saída do modelo DLNM.",
+      "keywords": ["DLNM", "risco relativo", "temperatura", "modelagem"]
+    },
+    "dlnm_lag_response": {
+      "title": "DLNM — Risco x Defasagem",
+      "desc": "Efeito do risco relativo por dia de defasagem (0 a 21 dias), na temperatura do percentil 75, por UF.",
+      "keywords": ["DLNM", "risco relativo", "lag", "modelagem"]
+    },
+    "dlnm_surface": {
+      "title": "DLNM — Superfície de Risco",
+      "desc": "Superfície bidimensional de risco relativo (temperatura x defasagem), por UF.",
+      "keywords": ["DLNM", "superfície", "heatmap", "modelagem"]
+    },
+    "env_era5_daily": {
+      "title": "Clima em Grade — ERA5-Land",
+      "desc": "Temperatura e precipitação diária por município a partir da reanálise ERA5-Land (ECMWF), complementar ao INMET.",
+      "keywords": ["ERA5", "reanálise", "temperatura", "precipitação", "grade"]
+    },
+    "env_chirps_daily": {
+      "title": "Chuva em Grade — CHIRPS",
+      "desc": "Precipitação diária por município a partir do CHIRPS v2.0 (satélite + estações, ~5km).",
+      "keywords": ["CHIRPS", "precipitação", "satélite", "grade"]
+    },
+    "env_prodes_daily": {
+      "title": "Desmatamento — PRODES",
+      "desc": "Área de desmatamento anual por município nos 6 biomas monitorados pelo PRODES/INPE.",
+      "keywords": ["PRODES", "desmatamento", "INPE", "bioma"]
+    },
+    "env_pollution_cams_daily": {
+      "title": "Poluição do Ar — CAMS",
+      "desc": "Concentração diária de PM2.5 e PM10 por município, reanálise CAMS (Copernicus).",
+      "keywords": ["CAMS", "poluição do ar", "PM2.5", "PM10"]
+    }
+  }
+}

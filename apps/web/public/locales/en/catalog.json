@@ -1,0 +1,81 @@
+{
+  "title": "Data Catalog",
+  "loading": "Loading catalog…",
+  "error": "Failed to load the catalog.",
+  "version": "Version",
+  "rows": "Rows",
+  "synthetic": "Synthetic",
+  "filtered_by_tag": "Filtered by theme \"{{tag}}\"",
+  "clear_filter": "clear filter",
+  "download_parquet": "Download Parquet",
+  "license": "License",
+  "coverage": "Coverage",
+  "schema": "Schema",
+  "column": "Column",
+  "type": "Type",
+  "description": "Description",
+  "pipeline_code": "Code / Pipeline",
+  "code_not_available": "Not available yet.",
+  "provenance": "Provenance (climasus_meta)",
+  "search_placeholder": "Search by name or keyword…",
+  "no_results": "No dataset found.",
+  "format": "Format",
+  "keywords": "Keywords",
+  "dataset": {
+    "dim_station": {
+      "title": "Weather Stations",
+      "desc": "INMET station metadata used for Rondônia's climatology: code, name, latitude and longitude.",
+      "keywords": ["INMET", "stations", "geolocation"]
+    },
+    "health_climate_daily": {
+      "title": "Daily Health & Climate",
+      "desc": "Daily series of deaths in climate-sensitive groups and climate variables (temperature, precipitation, humidity) per municipality in Rondônia, 2018–2023.",
+      "keywords": ["mortality", "temperature", "precipitation", "municipality", "time series"]
+    },
+    "heatwave_events": {
+      "title": "Heatwave Events",
+      "desc": "Heatwave events detected at RO's INMET stations (WHO/WMO methods), with duration, severity, and intensity class.",
+      "keywords": ["heatwaves", "WHO/WMO", "severity", "climate extremes"]
+    },
+    "health_climate_distributed_lag": {
+      "title": "Health & Climate — Lag Matrix",
+      "desc": "Health-climate series with 21-day lagged exposure history, input for lagged-risk modeling (DLNM).",
+      "keywords": ["DLNM", "lag", "modeling", "lagged exposure"]
+    },
+    "dlnm_exposure_response": {
+      "title": "DLNM — Risk vs. Temperature",
+      "desc": "Cumulative relative risk curve as a function of temperature, per state, DLNM model output.",
+      "keywords": ["DLNM", "relative risk", "temperature", "modeling"]
+    },
+    "dlnm_lag_response": {
+      "title": "DLNM — Risk vs. Lag",
+      "desc": "Relative risk effect by lag day (0 to 21 days), at the 75th percentile temperature, per state.",
+      "keywords": ["DLNM", "relative risk", "lag", "modeling"]
+    },
+    "dlnm_surface": {
+      "title": "DLNM — Risk Surface",
+      "desc": "Two-dimensional relative risk surface (temperature x lag), per state.",
+      "keywords": ["DLNM", "surface", "heatmap", "modeling"]
+    },
+    "env_era5_daily": {
+      "title": "Gridded Climate — ERA5-Land",
+      "desc": "Daily temperature and precipitation per municipality from the ERA5-Land reanalysis (ECMWF), complementary to INMET.",
+      "keywords": ["ERA5", "reanalysis", "temperature", "precipitation", "gridded"]
+    },
+    "env_chirps_daily": {
+      "title": "Gridded Rainfall — CHIRPS",
+      "desc": "Daily precipitation per municipality from CHIRPS v2.0 (satellite + station data, ~5km).",
+      "keywords": ["CHIRPS", "precipitation", "satellite", "gridded"]
+    },
+    "env_prodes_daily": {
+      "title": "Deforestation — PRODES",
+      "desc": "Annual deforested area per municipality across the 6 biomes monitored by PRODES/INPE.",
+      "keywords": ["PRODES", "deforestation", "INPE", "biome"]
+    },
+    "env_pollution_cams_daily": {
+      "title": "Air Pollution — CAMS",
+      "desc": "Daily PM2.5 and PM10 concentration per municipality, CAMS (Copernicus) reanalysis.",
+      "keywords": ["CAMS", "air pollution", "PM2.5", "PM10"]
+    }
+  }
+}

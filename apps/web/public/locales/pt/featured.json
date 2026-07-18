@@ -1,0 +1,42 @@
+{
+  "heat_cardio": {
+    "title": "Calor & Saúde Cardiovascular",
+    "desc": "Ondas de calor e mortalidade cardiovascular, com dado real publicado para Rondônia.",
+    "keywords": ["calor", "cardiovascular", "idosos", "ondas de calor"]
+  },
+  "cold_resp": {
+    "title": "Frio & Saúde Respiratória",
+    "desc": "Ondas de frio e hospitalizações respiratórias.",
+    "keywords": ["frio", "respiratório", "hospitalizações"]
+  },
+  "vector_borne": {
+    "title": "Doenças Transmitidas por Vetores & Clima",
+    "desc": "Dengue, zika, chikungunya e malária em função de precipitação e temperatura.",
+    "keywords": ["dengue", "zika", "chikungunya", "malária"]
+  },
+  "resp_air_quality": {
+    "title": "Saúde Respiratória & Qualidade do Ar",
+    "desc": "Doenças respiratórias e poluição atmosférica.",
+    "keywords": ["respiratório", "qualidade do ar", "poluição"]
+  },
+  "bioclimatic_indices": {
+    "title": "Índices Bioclimáticos",
+    "desc": "Indicadores de estresse térmico para saúde pública.",
+    "keywords": ["bioclimático", "estresse térmico", "índices"]
+  },
+  "climate_health_integration": {
+    "title": "Integração de Dados Clima-Saúde",
+    "desc": "Métodos de agregação temporal entre estações INMET e dados de saúde.",
+    "keywords": ["INMET", "agregação temporal", "integração de dados"]
+  },
+  "vulnerability": {
+    "title": "Vulnerabilidade Socioeconômica & Climática",
+    "desc": "Índices de vulnerabilidade combinando clima e indicadores socioeconômicos.",
+    "keywords": ["vulnerabilidade", "socioeconômico", "IBGE"]
+  },
+  "waterborne": {
+    "title": "Doenças de Veiculação Hídrica & Infecciosas",
+    "desc": "Doenças diarreicas, leptospirose e outras doenças hídricas relacionadas ao clima.",
+    "keywords": ["hídrica", "diarreia", "leptospirose"]
+  }
+}

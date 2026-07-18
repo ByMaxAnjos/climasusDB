@@ -1,0 +1,40 @@
+{
+  "tabs": {
+    "timeseries": "Serie temporal",
+    "comparison": "Comparación",
+    "seasonality": "Estacionalidad",
+    "dlnm_overall": "Riesgo x temperatura",
+    "dlnm_lag": "Riesgo x rezago",
+    "dlnm_surface": "Superficie"
+  },
+  "comparison_title": "Municipios principales — {{scope}}",
+  "seasonality_title": "Estacionalidad mensual — {{name}}",
+  "seasonality_hint": "Seleccione un municipio en el mapa para ver la estacionalidad mensual.",
+  "brazil_scope": "Brasil",
+  "no_data": "Sin datos para esta selección.",
+  "how_to_interpret": "Cómo interpretar",
+  "months": ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+  "export": {
+    "csv": "Descargar CSV",
+    "xlsx": "Descargar Excel",
+    "png": "Descargar PNG"
+  },
+  "dlnm": {
+    "exposure_axis": "Temperatura (°C)",
+    "rr_axis": "Riesgo relativo",
+    "log_rr_axis": "log(RR)",
+    "lag_axis": "Rezago (días)",
+    "overall_title": "Riesgo relativo x temperatura — {{name}}",
+    "lag_title": "Riesgo relativo x rezago (en p75) — {{name}}",
+    "surface_title": "Superficie temperatura x rezago — {{name}}",
+    "autocorr_warning": "⚠ Este modelo (a nivel de estado) mostró autocorrelación residual significativa — trate el intervalo de confianza como aproximado, no como una estimación estadísticamente definitiva. Ver docs/DATA_MODEL.md."
+  },
+  "interpret": {
+    "timeseries": "Cada punto es el valor del indicador en un día. Pase el cursor sobre la línea para ver el valor exacto. Picos y tendencias a lo largo del tiempo pueden indicar eventos climáticos (olas de calor/frío) o estacionalidad.",
+    "comparison": "Municipios ordenados de mayor a menor valor (top 15) dentro de la región/estado seleccionado. Útil para identificar valores atípicos — municipios con valores muy por encima de su entorno.",
+    "seasonality": "Promedio (o suma, para muertes) del indicador por mes, considerando todos los años disponibles en el municipio seleccionado. Ayuda a identificar patrones estacionales, como aumento de temperatura en sep-oct o de precipitación en la temporada de lluvias.",
+    "dlnm_overall": "Riesgo relativo acumulado (todos los rezagos combinados) en función de la temperatura, para todo el estado que contiene el municipio seleccionado — no una estimación específica del municipio. RR=1 (línea discontinua) es la referencia (la mediana histórica del estado). La banda sombreada es el intervalo de confianza del 95%; los puntos marcan los percentiles 25/50/75/90/95/99 de la temperatura observada.",
+    "dlnm_lag": "Riesgo relativo aislado por cada día de rezago (0 a 21 días después de la exposición), en la temperatura del percentil 75 del estado. Muestra cuántos días después de un día caluroso aparece el riesgo de muerte — útil para saber si el efecto es inmediato o tardío.",
+    "dlnm_surface": "Mapa de calor combinando temperatura (eje vertical) y rezago (eje horizontal): rojo = riesgo elevado (log RR > 0), azul = riesgo reducido (log RR < 0) en esa combinación. Ofrece la visión completa de dónde en la grilla temperatura x tiempo el efecto es más fuerte."
+  }
+}
