@@ -51,10 +51,10 @@ jobs:
       # mostrar o erro real de instalação. Se o passo acima falhar, tenta
       # instalar um pacote simples direto (fora do renv) pra expor o erro
       # de verdade. Remover assim que a causa raiz for identificada.
-      - name: Debug — instala pacote simples direto (fora do renv)
+      - name: Debug — instala a versão exata fixada no lockfile
         if: steps.renv-restore.outcome == 'failure'
         run: |
-          Rscript -e 'install.packages("magrittr", repos = "https://packagemanager.posit.co/cran/__linux__/noble/latest")'
+          Rscript -e 'renv::install("magrittr@2.0.4")'
       - name: Fail se renv::restore() falhou
         if: steps.renv-restore.outcome == 'failure'
         run: exit 1
