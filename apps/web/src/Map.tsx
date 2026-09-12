@@ -75,8 +75,10 @@ export function Map({ values, metric, stations, filterUfs, onSelectMuni }: MapPr
   // obsoletos quando a métrica troca para um conjunto menor (ou vazio).
   const appliedIdsRef = useRef<Set<number>>(new Set());
 
-  // Inicializa o mapa uma única vez — basemap CARTO Positron (raster, sem
-  // necessidade de chave de API) por baixo das camadas de município.
+  // Inicializa o mapa uma única vez — basemap OpenStreetMap padrão (raster,
+  // sem necessidade de chave de API) por baixo das camadas de município.
+  // ponytail: CARTO descontinuou o acesso anônimo aos tiles (basemaps.cartocdn.com
+  // agora exige API key); trocado pelos tiles públicos da OSMF.
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -85,19 +87,18 @@ export function Map({ values, metric, stations, filterUfs, onSelectMuni }: MapPr
       style: {
         version: 8,
         sources: {
-          carto: {
+          osm: {
             type: "raster",
             tiles: [
-              "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-              "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-              "https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-              "https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+              "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
+              "https://b.tile.openstreetmap.org/{z}/{x}/{y}.png",
+              "https://c.tile.openstreetmap.org/{z}/{x}/{y}.png",
             ],
             tileSize: 256,
-            attribution: "© OpenStreetMap contributors © CARTO",
+            attribution: "© OpenStreetMap contributors",
           },
         },
-        layers: [{ id: "carto-basemap", type: "raster", source: "carto" }],
+        layers: [{ id: "osm-basemap", type: "raster", source: "osm" }],
       },
       bounds: BRAZIL_BOUNDS,
       fitBoundsOptions: { padding: 24 },
