@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "../../router";
-import { query, registerDataset } from "../../db";
+import { dataUrl, query, registerDataset } from "../../db";
 import type { CatalogEntry, CatalogRoot, DataPackage } from "./types";
 
 interface CoverageRow {
@@ -41,7 +41,7 @@ export function CatalogDetail({ dataset }: { dataset: string }) {
 
     (async () => {
       try {
-        const catalog = (await (await fetch("/data/catalog.json")).json()) as CatalogRoot;
+        const catalog = (await (await fetch(dataUrl("/data/catalog.json"))).json()) as CatalogRoot;
         const found = catalog.datasets.find((d) => d.name === dataset);
         if (!found) {
           setError(true);
@@ -50,7 +50,7 @@ export function CatalogDetail({ dataset }: { dataset: string }) {
         setEntry(found);
 
         const dpPath = found.path.replace(/data\.parquet$/, "datapackage.json");
-        const dp = (await (await fetch(`/data/${dpPath}`)).json()) as DataPackage;
+        const dp = (await (await fetch(dataUrl(`/data/${dpPath}`))).json()) as DataPackage;
         setPkg(dp);
 
         const fields = dp.resources[0]?.schema.fields.map((f) => f.name) ?? [];
@@ -71,6 +71,11 @@ export function CatalogDetail({ dataset }: { dataset: string }) {
   if (error) return <p className="page" style={{ color: "var(--heat)" }}>{t("error")}</p>;
   if (!entry || !pkg) return <p className="page page-lede">{t("loading")}</p>;
 
+  const resourceFormats = Array.from(new Set(pkg.resources.map((r) => r.format)));
+  const hasCsv = resourceFormats.includes("csv");
+
+  const toVariantPath = (path: string, suffix: string) => path.replace(/data\.parquet$/, `data${suffix}`);
+
   return (
     <div className="page">
       <p>
@@ -83,23 +88,40 @@ export function CatalogDetail({ dataset }: { dataset: string }) {
         {t("version")}: {pkg.version} · {t("rows")}: {pkg.rows.toLocaleString()}
       </p>
       {entry.partitions?.length > 1 ? (
-        // Dataset particionado por UF: um Parquet por partição (hosting
-        // estático não concatena arquivos) — oferecemos um link por UF.
+        // Dataset particionado por UF: um botão por UF para Parquet, e um
+        // segundo bloco para formatos de conveniência quando existirem.
         <section>
           <div className="eyebrow">{t("download_parquet")}</div>
           <p style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
             {entry.partitions.map((p) => (
-              <a key={p.path} className="btn" href={`/data/${p.path}`} download>
+              <a key={p.path} className="btn" href={dataUrl(`/data/${p.path}`)} download>
                 {p.uf || entry.name}
               </a>
             ))}
           </p>
+          {hasCsv && (
+            <>
+              <div className="eyebrow" style={{ marginTop: 18 }}>{t("download_csv")}</div>
+              <p style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
+                {entry.partitions.map((p) => (
+                  <a key={`${p.path}-csv`} className="btn" href={dataUrl(`/data/${toVariantPath(p.path, ".csv.zip")}`)} download>
+                    {p.uf || entry.name}
+                  </a>
+                ))}
+              </p>
+            </>
+          )}
         </section>
       ) : (
-        <p>
-          <a className="btn btn-primary" href={`/data/${entry.path}`} download>
-            {t("download_parquet")}
+        <p style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          <a className="btn btn-primary" href={dataUrl(`/data/${entry.path}`)} download>
+            Parquet
           </a>
+          {hasCsv && (
+            <a className="btn" href={dataUrl(`/data/${toVariantPath(entry.path, ".csv.zip")}`)} download>
+              CSV
+            </a>
+          )}
         </p>
       )}
       {pkg.licenses.map((lic) => (
@@ -123,6 +145,11 @@ export function CatalogDetail({ dataset }: { dataset: string }) {
 
       <section style={{ marginTop: 28 }}>
         <div className="eyebrow">{t("schema")}</div>
+        {hasCsv && (
+          <p className="page-lede" style={{ marginTop: 8, fontSize: 13, color: "var(--muted)" }}>
+            Parquet sempre disponível · formatos de conveniência podem variar por dataset
+          </p>
+        )}
         <table className="data-table" style={{ marginTop: 10 }}>
           <thead>
             <tr>

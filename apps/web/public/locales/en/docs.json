@@ -7,6 +7,117 @@
   "app_unavailable": "This application does not have a published dataset yet.",
   "read_case_study": "Read the case study →",
   "page_not_found": "Page not found.",
+  "overview": {
+    "eyebrow": "Rondônia Climate and Health Center",
+    "title": "climasusDB: an open integrated database for climate, health and environment",
+    "lede": "climasusDB organizes public health, climate and environmental data into a local-first platform that can be queried in the browser and published to cloud storage. Its goal is to support analysis, visualization, applied research and product development in the climaSUS ecosystem.",
+    "institution_title": "Institutional context",
+    "institution_body": "climasusDB is part of the Rondônia Climate and Health Center and the broader climaSUS ecosystem. Development is funded by INCT-Conexão, with a focus on open infrastructure for analyzing climate risks and health outcomes in Brazil.",
+    "sections": [
+      {
+        "title": "What climasusDB is",
+        "body": [
+          "It is the data component of climaSUS: an organized, versioned and documented layer that transforms public systems into analysis-ready datasets.",
+          "Health data primarily comes from DATASUS; climate data includes observational sources such as INMET and, when published, gridded sources such as ERA5, CHIRPS, PRODES and CAMS. Methodological transformation is handled by the climasus4r package."
+        ]
+      },
+      {
+        "title": "How it is structured",
+        "body": [
+          "The architecture follows bronze, silver and gold layers. Bronze preserves raw or near-raw data; silver standardizes keys, dates and variables; gold publishes stable Parquet tables with provenance metadata embedded in the Arrow schema.",
+          "The data/public directory is exactly the layout intended for publication in a public bucket. The web app reads catalog.json and queries Parquet files through HTTP Range requests using DuckDB-WASM, without its own backend."
+        ]
+      },
+      {
+        "title": "Data formats",
+        "body": [
+          "Parquet is the official canonical format for climasusDB. It preserves types, compresses well, works with DuckDB, R and Python, and supports efficient partial reads in the browser.",
+          "ZIP-compressed CSV is offered only for small or summarized datasets. XLSX is not published in the catalog because it is redundant, less suitable for versioning and fragile for large datasets."
+        ]
+      },
+      {
+        "title": "Publishing and citation",
+        "body": [
+          "Operational data hosting should use a public bucket, such as Google Cloud Storage or Cloudflare R2. Zenodo should be used for archiving, DOI assignment and citation of closed releases.",
+          "This separation avoids using Zenodo as the atlas backend while preserving a citable, permanent and auditable copy of published data."
+        ]
+      }
+    ],
+    "product_title": "Platform sections",
+    "product_sections": [
+      {
+        "title": "Explore",
+        "body": [
+          "The main interactive analysis area. It supports navigation by municipality, state, indicator group and time series, using DuckDB queries directly over the published Parquet files."
+        ]
+      },
+      {
+        "title": "Data Catalog",
+        "body": [
+          "A navigable repository of published datasets. It shows version, schema, provenance, coverage and download links. Parquet is always available; zipped CSV appears only for small or summarized datasets."
+        ]
+      },
+      {
+        "title": "Applications",
+        "body": [
+          "A space for third-party or partner products that shared applications, dashboards, studies or prototypes built with climasusDB data or other products from the climaSUS ecosystem."
+        ]
+      },
+      {
+        "title": "Documentation",
+        "body": [
+          "A reference page for understanding the institutional origin, architecture, data contracts, query logic and technical paths for reproduction and publication."
+        ]
+      }
+    ],
+    "team": {
+      "title": "Core team",
+      "body": "This list includes only climasusDB core members, using profile data extracted from the reference climaSUS site.",
+      "members": [
+        {
+          "name": "Dr. Max Anjos",
+          "role": "Coordination · Maintainer",
+          "institution": "UFJF · Fiocruz-RO (CCSRO) · INCT-Conexão",
+          "email": "max.anjos@campus.ul.pt",
+          "photo": "/team/max-anjos.jpg",
+          "github": "https://github.com/ByMaxAnjos",
+          "linkedin": "https://linkedin.com/in/maxanjos"
+        },
+        {
+          "name": "Marlon Resende Faria",
+          "role": "Senior R/Python developer",
+          "institution": "Universidade de São Paulo (USP)",
+          "email": "marlon.faria@usp.br",
+          "photo": "https://scholar.googleusercontent.com/citations?view_op=view_photo&user=Eg3gr7YAAAAJ&citpid=1",
+          "github": "https://github.com/MarlonRF",
+          "linkedin": "https://www.linkedin.com/in/marlon-f-881159113"
+        },
+        {
+          "name": "Thauã Menezes",
+          "role": "Associate R/Python developer · Scientific communication",
+          "institution": "UNESP · Universidade Federal de Rondônia (UNIR)",
+          "email": "thaua.menezes@unesp.br",
+          "photo": "/team/thaua-menezes.png",
+          "github": "https://github.com/thauamenezez"
+        },
+        {
+          "name": "Andrey Araújo",
+          "role": "Associate R/Python developer",
+          "institution": "Fundação Oswaldo Cruz Rondônia",
+          "email": "andreyke.araujo@gmail.com",
+          "photo": "/team/andrey-araujo.jpg"
+        },
+        {
+          "name": "Nathalia A. Franqlin",
+          "role": "Associate developer · Scientific communication",
+          "institution": "UNESP",
+          "email": "n.franqlin@unesp.br",
+          "photo": "https://servicosweb.cnpq.br/wspessoa/servletrecuperafoto?tipo=1&id=K1172545E5"
+        }
+      ]
+    },
+    "technical_title": "Technical documentation"
+  },
   "page": {
     "data-model": {
       "title": "Data model & provenance",

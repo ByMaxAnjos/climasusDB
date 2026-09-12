@@ -23,3 +23,5 @@ figures/
 tables/
 pipelines/R/scratch/
 docs/manuscript/*.docx
+# Painel interno (make dashboard) — regenerável, reflete o estado local de data/public/
+docs/dashboard/

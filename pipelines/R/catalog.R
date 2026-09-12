@@ -438,6 +438,46 @@ read_climasus_meta <- function(path) {
   jsonlite::fromJSON(meta_json, simplifyVector = TRUE)
 }
 
+resource_path_for <- function(rel_path, ext) {
+  sub("data\\.parquet$", ext, rel_path)
+}
+
+build_resource_entries <- function(path, rel_path, ds, docs) {
+  base_schema <- list(fields = purrr::map(ds$schema$fields, function(field) {
+    list(
+      name        = field$name,
+      type        = field$type$ToString(),
+      description = if (!is.null(docs)) docs$columns[[field$name]] %||% "" else ""
+    )
+  }))
+
+  resources <- list(list(
+    name   = tools::file_path_sans_ext(basename(rel_path)),
+    path   = rel_path,
+    format = "parquet",
+    schema = base_schema
+  ))
+
+  sibling_formats <- list(
+    list(ext = "data.csv.zip", format = "csv")
+  )
+  for (spec in sibling_formats) {
+    sibling_path <- resource_path_for(rel_path, spec$ext)
+    # Checar no disco exige o caminho absoluto (`path`) — `rel_path` é
+    # relativo a public_dir, não ao cwd, e sempre resolvia para inexistente.
+    if (file.exists(file.path(dirname(path), basename(sibling_path)))) {
+      resources[[length(resources) + 1L]] <- list(
+        name   = tools::file_path_sans_ext(basename(sibling_path)),
+        path   = sibling_path,
+        format = spec$format,
+        schema = base_schema
+      )
+    }
+  }
+
+  resources
+}
+
 dataset_info_from_path <- function(path) {
   # .../gold/{dataset}/v{version}/uf={uf}/data.parquet
   parts <- strsplit(path, "/", fixed = TRUE)[[1]]
@@ -465,18 +505,7 @@ build_datapackage <- function(path, rel_path, meta, info) {
     version     = info$version,
     description = description,
     licenses    = list(list(name = "CC-BY-4.0", path = "https://creativecommons.org/licenses/by/4.0/")),
-    resources   = list(list(
-      name   = info$dataset,
-      path   = rel_path, # relativo a data/public — mesmo caminho servido por HTTP/GCS
-      format = "parquet",
-      schema = list(fields = purrr::map(ds$schema$fields, function(field) {
-        list(
-          name        = field$name,
-          type        = field$type$ToString(),
-          description = if (!is.null(docs)) docs$columns[[field$name]] %||% "" else ""
-        )
-      }))
-    )),
+    resources   = build_resource_entries(path, rel_path, ds, docs),
     generator     = if (!is.null(docs)) docs$generator else list(
       r = list(available = FALSE), python = list(available = FALSE)
     ),

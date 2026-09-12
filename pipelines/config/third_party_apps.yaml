@@ -1,0 +1,16 @@
+# Registro manual de parceiros/aplicações de terceiros que usam dados do
+# climasusDB — não há telemetria de uso real (o atlas é 100% client-side,
+# sem backend), então esta lista é mantida à mão por quem souber de um novo
+# uso (ex. um parceiro que avisou, um paper que citou o dataset).
+#
+# Adicione uma entrada por app/parceiro conhecido:
+#
+# apps:
+#   - name: "Nome do app ou grupo"
+#     contact: "email@exemplo.org"
+#     datasets: ["health_climate_daily", "heatwave_events"]
+#     link: "https://exemplo.org/app"
+#     status: "active"   # active | inactive | prospecting
+#     notes: "Observação livre — ex. o que o app faz, desde quando usa."
+
+apps: []

@@ -7,19 +7,132 @@
   "app_unavailable": "Esta aplicação ainda não tem dataset publicado.",
   "read_case_study": "Ler o estudo de caso →",
   "page_not_found": "Página não encontrada.",
+  "overview": {
+    "eyebrow": "Centro de Clima de Saúde de Rondônia (CCSRO) · INCT-Conexão",
+    "title": "climasusDB: base aberta de dados integrados sobre clima, saúde e ambiente",
+    "lede": "O climasusDB organiza dados públicos de saúde, clima e ambiente em uma plataforma local-first, consultável no navegador e preparada para publicação em nuvem. O objetivo é apoiar análise, visualização, pesquisa aplicada e desenvolvimento de produtos do ecossistema climaSUS.",
+    "institution_title": "Vínculo institucional",
+    "institution_body": "O climasusDB é parte do Centro de Clima de Saúde de Rondônia e integra o ecossistema climaSUS. O desenvolvimento é financiado pelo INCT-Conexão, com foco em infraestrutura aberta para análise de riscos climáticos e seus efeitos sobre a saúde no Brasil.",
+    "sections": [
+      {
+        "title": "O que é o climasusDB",
+        "body": [
+          "É o componente de dados do climaSUS: uma camada organizada, versionada e documentada que transforma dados de sistemas públicos em datasets analíticos prontos para consulta, sem que cada grupo de pesquisa precise refazer a extração e limpeza dos microdados brutos.",
+          "Os dados de saúde vêm do DATASUS (SIM-DO); os dados climáticos combinam estações automáticas do INMET com fontes em grade (ERA5, CHIRPS, PRODES, CAMS) para cobertura complementar onde a rede de estações é esparsa. A transformação metodológica é feita inteiramente por funções do pacote climasus4r."
+        ]
+      },
+      {
+        "title": "Como está estruturado",
+        "body": [
+          "A arquitetura segue o fluxo bronze, silver e gold. Bronze preserva dados brutos ou quase brutos; silver padroniza chaves, datas e variáveis; gold publica tabelas estáveis em Parquet, com metadados de proveniência embutidos no schema Arrow.",
+          "O app web consulta os Parquets publicados diretamente por HTTP Range usando DuckDB-WASM, sem backend próprio."
+        ]
+      },
+      {
+        "title": "Formatos de dados",
+        "body": [
+          "Parquet é o formato oficial e canônico do climasusDB. Ele preserva tipos, comprime bem, funciona com DuckDB, R, Python e permite leitura parcial eficiente no navegador.",
+          "CSV compactado em ZIP é oferecido como alternativa para datasets pequenos ou resumidos, mais simples de abrir em planilhas."
+        ]
+      },
+      {
+        "title": "Publicação e citação",
+        "body": [
+          "A hospedagem operacional dos dados ocorre em bucket público (Google Cloud Storage ou Cloudflare R2); o Zenodo é reservado para arquivamento, DOI e citação de releases fechados — não como backend do atlas.",
+          "Os datasets Gold são distribuídos sob licença CC-BY 4.0; o código do pipeline (climasus4r, climasusDB) é MIT."
+        ]
+      }
+    ],
+    "product_title": "Seções da plataforma",
+    "product_sections": [
+      {
+        "title": "Explorar",
+        "body": [
+          "Área principal de análise interativa. Permite navegar por município, estado, grupo de indicadores e séries temporais, usando consultas DuckDB diretamente sobre os Parquets publicados."
+        ]
+      },
+      {
+        "title": "Catálogo de Dados",
+        "body": [
+          "Repositório navegável dos datasets publicados. Mostra versão, schema, proveniência, cobertura e links de download. Parquet aparece sempre; CSV zip aparece apenas quando o dataset é pequeno ou resumido."
+        ]
+      },
+      {
+        "title": "Aplicações",
+        "body": [
+          "Espaço para produtos de terceiros ou parceiros que compartilharam aplicações, painéis, estudos ou protótipos construídos com dados do climasusDB ou com outros produtos do ecossistema climaSUS."
+        ]
+      },
+      {
+        "title": "Documentação",
+        "body": [
+          "Página de referência para entender a origem institucional, a arquitetura, os contratos de dados, a lógica de consulta e os caminhos técnicos para reprodução e publicação."
+        ]
+      }
+    ],
+    "team": {
+      "title": "Equipe do núcleo",
+      "body": "Quem faz isso acontencer: pesquisadores, desenvolvedores e comunicadores científicos do CCSRO, Fiocruz-RO e INCT-Conexão. A equipe é aberta a colaborações externas — se você quer contribuir, entre em contato.",
+      "members": [
+        {
+          "name": "Dr. Max Anjos",
+          "role": "Coordenação · Mantenedor",
+          "institution": "UFJF · Fiocruz-RO (CCSRO) · INCT-Conexão",
+          "email": "max.anjos@campus.ul.pt",
+          "photo": "/team/max-anjos.jpg",
+          "github": "https://github.com/ByMaxAnjos",
+          "linkedin": "https://linkedin.com/in/maxanjos"
+        },
+        {
+          "name": "Marlon Resende Faria",
+          "role": "Desenvolvedor sênior R/Python",
+          "institution": "Universidade de São Paulo (USP)",
+          "email": "marlon.faria@usp.br",
+          "photo": "https://scholar.googleusercontent.com/citations?view_op=view_photo&user=Eg3gr7YAAAAJ&citpid=1",
+          "github": "https://github.com/MarlonRF",
+          "linkedin": "https://www.linkedin.com/in/marlon-f-881159113"
+        },
+        {
+          "name": "Thauã Menezes",
+          "role": "Desenvolvedor associado R/Python · Comunicação científica",
+          "institution": "UNESP · Universidade Federal de Rondônia (UNIR)",
+          "email": "thaua.menezes@unesp.br",
+          "photo": "/team/thaua-menezes.png",
+          "github": "https://github.com/thauamenezez"
+        },
+        {
+          "name": "Andrey Araújo",
+          "role": "Desenvolvedor associado R/Python",
+          "institution": "Fundação Oswaldo Cruz Rondônia",
+          "email": "andreyke.araujo@gmail.com",
+          "photo": "/team/andrey-araujo.jpg"
+        },
+        {
+          "name": "Nathalia A. Franqlin",
+          "role": "Desenvolvedora associada · Comunicação científica",
+          "institution": "UNESP",
+          "email": "n.franqlin@unesp.br",
+          "photo": "https://servicosweb.cnpq.br/wspessoa/servletrecuperafoto?tipo=1&id=K1172545E5"
+        }
+      ]
+    },
+    "technical_title": "Documentação técnica"
+  },
   "page": {
     "data-model": {
       "title": "Modelo de dados & proveniência",
       "body": [
         "Todo dataset Gold publicado em data/public/gold/ é um Parquet com metadados de proveniência embutidos no schema Arrow, sob a chave \"climasus_meta\" (gravados por climasus4r::write_parquet_climasus()). Esses metadados incluem o sistema DATASUS de origem, o estágio do pipeline, o tipo de agregação e um histórico de processamento.",
-        "Versionamento segue vX.Y.Z por dataset (ex. health_climate_daily/v1.0.0). O caminho é sempre gold/{dataset}/v{versão}/uf={uf}/data.parquet — o schema é idêntico entre versões sintéticas e reais, para que nada no frontend precise mudar quando um dataset passa de protótipo para dado real.",
+        "Versionamento segue vX.Y.Z por dataset (ex. health_climate_daily/v1.0.0). O caminho é sempre gold/{dataset}/v{versão}/uf={uf}/data.parquet. A v1.0.0 é o pipeline nacional real, publicado para as 27 unidades federativas do Brasil (5.569 dos 5.570 municípios do IBGE); v0.1.0/uf=RO é dado sintético, gerado offline e usado apenas como smoke test de CI. O schema é idêntico entre as duas versões, para que nada no frontend precise mudar quando um dataset passa de protótipo para dado real.",
+        "Além do mart principal health_climate_daily (óbitos climate-sensitive × clima diário por município), o catálogo publica: dim_station (636 estações INMET), health_climate_distributed_lag e dlnm_exposure_response/dlnm_lag_response/dlnm_surface (insumo e saída de modelagem DLNM de risco relativo, ajustada por UF), heatwave_events (9.731 eventos de onda de calor detectados por estação), health_climate_muni_summary (agregado por município, com supressão de célula pequena k=5 para contagens de óbito entre 1 e 4) e as fontes gridded complementares env_era5_daily/env_chirps_daily/env_prodes_daily/env_pollution_cams_daily.",
+        "A exposição climática (tmean, tmax, tmin, precip, rh) passa por preenchimento de lacunas antes da integração — um modelo de gradient boosting ajustado por estação (climasus4r::sus_climate_fill_inmet()) reduz o percentual de tmean ausente de ~49% (sem preenchimento) para 6,3% na cobertura nacional. Datasets Gold são distribuídos sob licença CC-BY 4.0.",
         "O arquivo data/public/catalog.json lista todos os datasets publicados; cada um tem um datapackage.json (padrão Frictionless Data) irmão com o schema completo e os mesmos metadados de proveniência."
       ]
     },
     "querying": {
       "title": "Consultando via DuckDB-WASM",
       "body": [
-        "O climasusDB não tem backend: o navegador roda uma instância do DuckDB compilada para WebAssembly e consulta os arquivos Parquet publicados diretamente via HTTP range requests — só os bytes necessários para cada consulta são baixados.",
+        "O climasusDB não tem backend: o navegador roda uma instância do DuckDB compilada para WebAssembly e consulta os arquivos Parquet publicados diretamente via HTTP range requests — só os bytes necessários para cada consulta são baixados, mesmo com dados nacionais particionados por UF.",
         "Os mesmos arquivos Parquet podem ser abertos fora da plataforma, sem nenhuma dependência do climasusDB: com o DuckDB CLI (SELECT * FROM read_parquet('URL')), com pandas/pyarrow em Python, ou com arrow::read_parquet() em R.",
         "Exemplo de consulta usada pelo Explorar: SELECT code_muni, avg(tmax) FROM health_climate_daily GROUP BY code_muni."
       ]
@@ -27,16 +140,16 @@
     "catalog-contract": {
       "title": "Contrato do catálogo",
       "body": [
-        "catalog.json garante: nome do dataset, versão mais recente, lista de versões disponíveis, flag de dado sintético, caminho relativo do Parquet e contagem de linhas. datapackage.json garante o schema de colunas e os metadados climasus_meta completos.",
-        "Datasets tabulares (como health_climate_daily) usam esse contrato Frictionless Data, não STAC. O catálogo STAC (build_stac.R) é reservado para datasets raster em grade (ERA5, CHIRPS) quando esses forem publicados — evita duplicar dois sistemas de catalogação para o mesmo tipo de dado tabular."
+        "catalog.json garante: nome do dataset, versão mais recente, lista de versões disponíveis, flag de dado sintético, caminho relativo do Parquet e contagem de linhas por partição de UF. datapackage.json garante o schema de colunas e os metadados climasus_meta completos.",
+        "Todo dataset Gold (tabular ou gridded) segue esse contrato Frictionless Data. Para as fontes gridded complementares (env_era5_daily, env_chirps_daily, env_prodes_daily, env_pollution_cams_daily), há também um catálogo STAC estático em data/public/stac/, gerado por build_stac.R — os dois catálogos convivem: Frictionless descreve o schema tabular consumido pelo DuckDB-WASM, STAC descreve a mesma coleção no vocabulário geoespacial padrão para quem já consome dados em grade por essa via."
       ]
     },
     "heat-cardio": {
-      "title": "Calor e mortalidade em Rondônia",
+      "title": "Calor e mortalidade cardiovascular",
       "body": [
-        "Este tema aplica ao dado publicado de Rondônia a mesma abordagem metodológica de um estudo de caso do climasus4r sobre mortalidade cardiovascular em idosos e ondas de calor: detectar eventos de onda de calor (métodos OMS/OMM) a partir de séries de temperatura das estações INMET e relacioná-los à série diária de óbitos por município.",
-        "Os datasets publicados que sustentam este tema são health_climate_daily (óbitos e clima diários por município, 2018–2023) e heatwave_events (eventos de onda de calor detectados nas estações INMET de RO, com índice de severidade e classe de intensidade).",
-        "Para a metodologia estatística completa (DLNM, carga atribuível), veja o tutorial de modelagem avançada correspondente na documentação do climasus4r."
+        "Este tema aplica a mesma abordagem metodológica de um estudo de caso do climasus4r sobre mortalidade cardiovascular em idosos e ondas de calor, agora aos dados publicados nacionalmente: detectar eventos de onda de calor (métodos OMS/OMM) a partir de séries de temperatura das estações INMET e relacioná-los à série diária de óbitos por município, nas 27 UFs.",
+        "Os datasets publicados que sustentam este tema são health_climate_daily (óbitos e clima diários por município, 2018–2023, cobertura nacional) e heatwave_events (9.731 eventos de onda de calor detectados nas estações INMET, com índice de severidade e classe de intensidade — cada evento usa o próprio histórico da estação como referência, não a normal climatológica 1981–2010, então contagens entre estações com séries de tamanho muito diferente não são diretamente comparáveis). A estimativa de risco relativo por temperatura (curva exposição-resposta, efeito por lag e superfície completa) é modelada por UF via DLNM e publicada em dlnm_exposure_response, dlnm_lag_response e dlnm_surface.",
+        "Rondônia foi o recorte original do estudo de caso que originou esta abordagem; hoje ela é aplicada ao país inteiro. Para a metodologia estatística completa (DLNM, carga atribuível), veja o tutorial de modelagem avançada correspondente na documentação do climasus4r."
       ]
     }
   }

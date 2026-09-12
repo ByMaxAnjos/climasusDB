@@ -4,6 +4,7 @@ import { Link, useRoute } from "../../router";
 import { FEATURED_THEMES } from "../../data/featured-themes";
 import { getDatasetPresentation } from "../../data/dataset-meta";
 import { CardMedia } from "../../components/CardMedia";
+import { dataUrl } from "../../db";
 import type { CatalogEntry, CatalogRoot } from "./types";
 
 export function CatalogList() {
@@ -15,7 +16,7 @@ export function CatalogList() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    fetch("/data/catalog.json")
+    fetch(dataUrl("/data/catalog.json"))
       .then((res) => res.json() as Promise<CatalogRoot>)
       .then((data) => setDatasets(data.datasets))
       .catch(() => setError(true));

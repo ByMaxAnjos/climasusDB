@@ -8,6 +8,7 @@
   "filtered_by_tag": "Filtrado pelo tema \"{{tag}}\"",
   "clear_filter": "limpar filtro",
   "download_parquet": "Baixar Parquet",
+  "download_csv": "Baixar CSV",
   "license": "Licença",
   "coverage": "Cobertura",
   "schema": "Schema",

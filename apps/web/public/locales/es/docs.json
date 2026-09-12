@@ -7,6 +7,117 @@
   "app_unavailable": "Esta aplicación todavía no tiene un dataset publicado.",
   "read_case_study": "Leer el estudio de caso →",
   "page_not_found": "Página no encontrada.",
+  "overview": {
+    "eyebrow": "Centro de Clima y Salud de Rondônia",
+    "title": "climasusDB: base abierta de datos integrados sobre clima, salud y ambiente",
+    "lede": "climasusDB organiza datos públicos de salud, clima y ambiente en una plataforma local-first, consultable en el navegador y preparada para publicación en la nube. Su objetivo es apoyar análisis, visualización, investigación aplicada y desarrollo de productos del ecosistema climaSUS.",
+    "institution_title": "Vínculo institucional",
+    "institution_body": "climasusDB es parte del Centro de Clima y Salud de Rondônia e integra el ecosistema climaSUS. El desarrollo está financiado por INCT-Conexão, con foco en infraestructura abierta para analizar riesgos climáticos y sus efectos sobre la salud en Brasil.",
+    "sections": [
+      {
+        "title": "Qué es climasusDB",
+        "body": [
+          "Es el componente de datos de climaSUS: una capa organizada, versionada y documentada que transforma datos de sistemas públicos en datasets listos para análisis.",
+          "Los datos de salud vienen principalmente de DATASUS; los datos climáticos incluyen fuentes observacionales como INMET y, cuando estén publicados, fuentes en grilla como ERA5, CHIRPS, PRODES y CAMS. La transformación metodológica se realiza con el paquete climasus4r."
+        ]
+      },
+      {
+        "title": "Cómo está estructurado",
+        "body": [
+          "La arquitectura sigue capas bronze, silver y gold. Bronze preserva datos brutos o casi brutos; silver estandariza claves, fechas y variables; gold publica tablas estables en Parquet con metadatos de procedencia incorporados en el schema Arrow.",
+          "El directorio data/public representa exactamente lo que debe publicarse en un bucket público. La aplicación web lee catalog.json y consulta los Parquets mediante HTTP Range usando DuckDB-WASM, sin backend propio."
+        ]
+      },
+      {
+        "title": "Formatos de datos",
+        "body": [
+          "Parquet es el formato oficial y canónico de climasusDB. Preserva tipos, comprime bien, funciona con DuckDB, R y Python, y permite lectura parcial eficiente en el navegador.",
+          "CSV comprimido en ZIP se ofrece solo para datasets pequeños o resumidos. XLSX no se publica en el catálogo porque es redundante, menos adecuado para versionado y frágil para bases grandes."
+        ]
+      },
+      {
+        "title": "Publicación y citación",
+        "body": [
+          "El hospedaje operativo de los datos debe realizarse en un bucket público, como Google Cloud Storage o Cloudflare R2. Zenodo debe usarse para archivo, DOI y citación de releases cerrados.",
+          "Esta separación evita usar Zenodo como backend del atlas y mantiene una copia citable, permanente y auditable de los datos publicados."
+        ]
+      }
+    ],
+    "product_title": "Secciones de la plataforma",
+    "product_sections": [
+      {
+        "title": "Explorar",
+        "body": [
+          "Área principal de análisis interactivo. Permite navegar por municipio, estado, grupo de indicadores y series temporales, usando consultas DuckDB directamente sobre los Parquets publicados."
+        ]
+      },
+      {
+        "title": "Catálogo de Datos",
+        "body": [
+          "Repositorio navegable de los datasets publicados. Muestra versión, schema, procedencia, cobertura y links de descarga. Parquet aparece siempre; CSV zip aparece solo cuando el dataset es pequeño o resumido."
+        ]
+      },
+      {
+        "title": "Aplicaciones",
+        "body": [
+          "Espacio para productos de terceros o socios que compartieron aplicaciones, paneles, estudios o prototipos construidos con datos de climasusDB o con otros productos del ecosistema climaSUS."
+        ]
+      },
+      {
+        "title": "Documentación",
+        "body": [
+          "Página de referencia para entender el origen institucional, la arquitectura, los contratos de datos, la lógica de consulta y los caminos técnicos para reproducción y publicación."
+        ]
+      }
+    ],
+    "team": {
+      "title": "Equipo del núcleo",
+      "body": "El equipo listado aquí incluye solamente los miembros del núcleo de climasusDB, con datos de perfil extraídos del sitio climaSUS de referencia.",
+      "members": [
+        {
+          "name": "Dr. Max Anjos",
+          "role": "Coordinación · Mantenedor",
+          "institution": "UFJF · Fiocruz-RO (CCSRO) · INCT-Conexão",
+          "email": "max.anjos@campus.ul.pt",
+          "photo": "/team/max-anjos.jpg",
+          "github": "https://github.com/ByMaxAnjos",
+          "linkedin": "https://linkedin.com/in/maxanjos"
+        },
+        {
+          "name": "Marlon Resende Faria",
+          "role": "Desarrollador sénior R/Python",
+          "institution": "Universidade de São Paulo (USP)",
+          "email": "marlon.faria@usp.br",
+          "photo": "https://scholar.googleusercontent.com/citations?view_op=view_photo&user=Eg3gr7YAAAAJ&citpid=1",
+          "github": "https://github.com/MarlonRF",
+          "linkedin": "https://www.linkedin.com/in/marlon-f-881159113"
+        },
+        {
+          "name": "Thauã Menezes",
+          "role": "Desarrollador asociado R/Python · Comunicación científica",
+          "institution": "UNESP · Universidade Federal de Rondônia (UNIR)",
+          "email": "thaua.menezes@unesp.br",
+          "photo": "/team/thaua-menezes.png",
+          "github": "https://github.com/thauamenezez"
+        },
+        {
+          "name": "Andrey Araújo",
+          "role": "Desarrollador asociado R/Python",
+          "institution": "Fundação Oswaldo Cruz Rondônia",
+          "email": "andreyke.araujo@gmail.com",
+          "photo": "/team/andrey-araujo.jpg"
+        },
+        {
+          "name": "Nathalia A. Franqlin",
+          "role": "Desarrolladora asociada · Comunicación científica",
+          "institution": "UNESP",
+          "email": "n.franqlin@unesp.br",
+          "photo": "https://servicosweb.cnpq.br/wspessoa/servletrecuperafoto?tipo=1&id=K1172545E5"
+        }
+      ]
+    },
+    "technical_title": "Documentación técnica"
+  },
   "page": {
     "data-model": {
       "title": "Modelo de datos & procedencia",

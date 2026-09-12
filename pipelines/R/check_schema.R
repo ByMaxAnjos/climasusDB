@@ -8,46 +8,23 @@
 #   encontradas em data/public/gold (todas as versões/UFs).
 
 suppressPackageStartupMessages(library(arrow))
+source("pipelines/R/dashboard_helpers.R")
 
 args <- commandArgs(trailingOnly = TRUE)
 paths <- if (length(args) >= 1) args[[1]] else
   Sys.glob("data/public/gold/health_climate_daily/v*/uf=*/data.parquet")
 if (length(paths) == 0) stop("Nenhum Parquet de health_climate_daily encontrado em data/public/gold.")
 
-expected <- c(
-  code_muni = "int32", name_muni = "string", date = "date32[day]",
-  deaths_total = "int32", deaths_resp = "int32", deaths_circ = "int32",
-  tmean = "double", tmax = "double", tmin = "double",
-  precip = "double", rh = "double"
-)
-
-check_one <- function(path) {
-  ds <- arrow::open_dataset(path)
-  actual <- setNames(
-    vapply(ds$schema$fields, function(f) f$type$ToString(), character(1)),
-    vapply(ds$schema$fields, function(f) f$name, character(1))
-  )
-
-  missing <- setdiff(names(expected), names(actual))
-  if (length(missing) > 0) {
-    stop(sprintf("Colunas obrigatórias ausentes em %s: %s", path, paste(missing, collapse = ", ")))
-  }
-
-  mismatched <- names(expected)[expected != actual[names(expected)]]
-  if (length(mismatched) > 0) {
-    stop(sprintf(
-      "Tipo divergente do contrato (docs/DATA_MODEL.md) em %s: %s",
-      path,
-      paste(sprintf("%s (esperado %s, veio %s)", mismatched, expected[mismatched], actual[mismatched]), collapse = "; ")
-    ))
-  }
-
-  meta <- ds$schema$metadata[["climasus_meta"]]
-  if (is.null(meta)) stop(sprintf("Parquet sem climasus_meta embutido: %s", path))
+report <- check_schema_report(paths)
+failed <- report[!report$ok, ]
+if (nrow(failed) > 0) {
+  stop(sprintf(
+    "Contrato de schema (docs/DATA_MODEL.md) falhou em %d de %d partição(ões):\n%s",
+    nrow(failed), nrow(report),
+    paste(sprintf("  %s: %s", failed$path, failed$problem), collapse = "\n")
+  ))
 }
-
-for (path in paths) check_one(path)
 cat(sprintf(
-  "OK: %d partição(ões) respeitam o contrato de schema (%d colunas, climasus_meta presente).\n",
-  length(paths), length(expected)
+  "OK: %d partição(ões) respeitam o contrato de schema (11 colunas, climasus_meta presente).\n",
+  nrow(report)
 ))

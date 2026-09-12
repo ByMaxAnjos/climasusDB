@@ -1,0 +1,125 @@
+---
+title: "climasusDB — Painel interno de controle"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: flatly
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+suppressPackageStartupMessages({
+  library(arrow)
+  library(dplyr)
+  library(ggplot2)
+  library(DT)
+})
+source("pipelines/R/dashboard_helpers.R")
+
+datatable_simple <- function(df, ...) {
+  DT::datatable(df, rownames = FALSE, options = list(pageLength = 30, dom = "ftip"), ...)
+}
+```
+
+Gerado sob demanda via `make dashboard` — reflete o estado de `data/public/`
+no momento em que este relatório foi renderizado, não é atualizado ao vivo.
+Não é publicado na plataforma pública (`docs/dashboard/` é gitignored).
+
+## Saúde do pipeline e dos dados
+
+### Contrato de schema
+
+Confere `docs/DATA_MODEL.md` contra cada partição publicada de
+`health_climate_daily` (todas as versões — sintética e real).
+
+```{r schema}
+schema <- check_schema_report()
+if (nrow(schema) == 0) {
+  cat("Nenhuma partição de health_climate_daily encontrada em data/public/gold — rode make data-synth ou make national primeiro.")
+} else {
+  datatable_simple(schema)
+}
+```
+
+### Cobertura de municípios
+
+Municípios presentes em `health_climate_daily` (versão mais recente) vs. o
+total de 5.570 municípios do IBGE embutido no `climasus4r`.
+
+```{r coverage}
+paths <- latest_paths_for("health_climate_daily")
+if (length(paths) == 0) {
+  cat("Sem partições publicadas — nada a conferir.")
+} else {
+  cov <- coverage_report(paths)
+  cat(sprintf(
+    "%d de %d municípios presentes (%.1f%%).\n",
+    cov$n_present, cov$n_total, 100 * cov$n_present / cov$n_total
+  ))
+  if (nrow(cov$missing) > 0) datatable_simple(cov$missing)
+}
+```
+
+### Imputação climática
+
+`% tmean` ausente por UF, após o preenchimento de lacunas
+(`climasus4r::sus_climate_fill_inmet()`).
+
+```{r imputation}
+paths <- latest_paths_for("health_climate_daily")
+if (length(paths) == 0) {
+  cat("Sem partições publicadas — nada a conferir.")
+} else {
+  imp <- imputation_report(paths)
+  print(
+    ggplot2::ggplot(imp, ggplot2::aes(x = reorder(uf, -pct_na), y = pct_na)) +
+      ggplot2::geom_col(fill = "#2f6f4f") +
+      ggplot2::labs(x = "UF", y = "% tmean ausente", title = NULL) +
+      ggplot2::theme_minimal()
+  )
+  datatable_simple(imp)
+}
+```
+
+### Células pequenas
+
+Municípios com contagens de óbito entre 1 e 4 (limiar de reidentificação),
+por UF — mesma checagem de `check_small_cells.R`, agregada nacionalmente.
+Ver a política de supressão k=5 documentada em `docs/DATA_MODEL.md`.
+
+```{r small-cells}
+paths <- latest_paths_for("health_climate_daily")
+if (length(paths) == 0) {
+  cat("Sem partições publicadas — nada a conferir.")
+} else {
+  datatable_simple(small_cells_report(paths))
+}
+```
+
+## Inventário do catálogo
+
+Direto de `data/public/catalog.json`.
+
+```{r catalog}
+inv <- catalog_inventory()
+if (nrow(inv) == 0) {
+  cat("catalog.json não encontrado — rode make national/make data-synth e depois catalog.R.")
+} else {
+  datatable_simple(inv)
+}
+```
+
+## Parceiros e aplicações de terceiros
+
+Registro mantido à mão em `pipelines/config/third_party_apps.yaml` — não há
+telemetria de uso real hoje (o atlas é client-side, sem backend).
+
+```{r third-party}
+reg <- third_party_registry()
+if (nrow(reg) == 0) {
+  cat("Nenhum parceiro/app registrado ainda — edite pipelines/config/third_party_apps.yaml.")
+} else {
+  datatable_simple(reg)
+}
+```

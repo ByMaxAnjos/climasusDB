@@ -29,6 +29,23 @@ async function getDb(): Promise<duckdb.AsyncDuckDB> {
   return dbPromise;
 }
 
+// Base dos dados públicos. A raiz do bucket (R2/GCS) espelha data/public/
+// diretamente — mesma convenção do alvo `publish` (gsutil rsync) no
+// Makefile — então "/data/..." (caminho relativo ao symlink de dev) precisa
+// ter esse prefixo removido antes de resolver contra VITE_DATA_URL. Sem
+// VITE_DATA_URL, cai no host da própria página + "/data/" (symlink
+// apps/web/public/data criado por `make setup`).
+const DATA_BASE_URL = import.meta.env.VITE_DATA_URL
+  ? `${import.meta.env.VITE_DATA_URL}/`
+  : `${window.location.origin}/data/`;
+
+/** Resolve um caminho de dado público (ex. "/data/catalog.json") contra
+ * VITE_DATA_URL — usado tanto para fetch/registerDataset quanto para links
+ * de download, para que front e dados possam morar em hosts diferentes. */
+export function dataUrl(path: string): string {
+  return new URL(path.replace(/^\/?data\//, ""), DATA_BASE_URL).href;
+}
+
 // Nomes virtuais usados nas queries SQL (registrados uma vez, via HTTP range
 // requests). URL absoluta: o worker do DuckDB-WASM roda num contexto blob:
 // sem base URL da página, então um caminho relativo ("/data/...") falha.
@@ -45,7 +62,7 @@ const registeredFiles = new Set<string>();
 export async function registerDataset(name: string, path: string): Promise<void> {
   if (registeredFiles.has(name)) return;
   const db = await getDb();
-  await db.registerFileURL(name, new URL(path, window.location.origin).href, duckdb.DuckDBDataProtocol.HTTP, false);
+  await db.registerFileURL(name, dataUrl(path), duckdb.DuckDBDataProtocol.HTTP, false);
   registeredFiles.add(name);
 }
 
@@ -100,7 +117,7 @@ let dlnmAvailable = false;
 async function ensureDatasetsRegistered(): Promise<void> {
   if (!datasetsReadyPromise) {
     datasetsReadyPromise = (async () => {
-      const res = await fetch(new URL("/data/catalog.json", window.location.origin).href);
+      const res = await fetch(dataUrl("/data/catalog.json"));
       if (!res.ok) throw new Error(`catalog.json: HTTP ${res.status}`);
       const catalog: Catalog = await res.json();
       await createUnionView(HEALTH_CLIMATE_FILE, "health_climate_daily", catalog);

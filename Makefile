@@ -1,4 +1,4 @@
-.PHONY: setup link-data data-synth data-real data-real-manifest geo-br tiles-br web publish national gridded dlnm muni-summary stac check check-small-cells
+.PHONY: setup link-data data-synth data-real data-real-manifest geo-br tiles-br web publish publish-r2 r2-cors national gridded dlnm muni-summary stac check check-small-cells dashboard
 
 setup: link-data
 	mkdir -p data/bronze data/silver data/public/gold
@@ -58,8 +58,38 @@ check:
 check-small-cells:
 	Rscript pipelines/R/check_small_cells.R
 
+# Painel interno de controle (schema, cobertura, imputação, células pequenas,
+# inventário do catálogo, registro de terceiros). Gerado sob demanda, não faz
+# parte do deploy público (docs/dashboard/ é gitignored). Lê data/public/,
+# não baixa nem reprocessa nada.
+dashboard:
+	Rscript -e 'rmarkdown::render("pipelines/R/dashboard.Rmd", output_file = "index.html", output_dir = "docs/dashboard", knit_root_dir = getwd())'
+
 # Fase 5 — requer projeto GCP configurado (infra/setup_gcp.sh) e DATA_BUCKET definido.
 # Guard obrigatório: rsync -d é destrutivo — DATA_BUCKET vazio apagaria o bucket errado.
 publish:
 	@test -n "$(DATA_BUCKET)" || { echo "ERRO: defina DATA_BUCKET (make publish DATA_BUCKET=meu-bucket)"; exit 1; }
 	gsutil -m rsync -r -d data/public/ gs://$(DATA_BUCKET)/
+
+# Cloudflare R2 (S3-compatible). Requer credenciais de uma API Token R2
+# (dashboard → R2 → Manage API Tokens) configuradas em `aws configure
+# --profile r2`, e R2_ACCOUNT_ID / R2_BUCKET definidos.
+# Uso: make publish-r2 R2_ACCOUNT_ID=xxxx R2_BUCKET=climasusdb-gold
+publish-r2:
+	@test -n "$(R2_ACCOUNT_ID)" || { echo "ERRO: defina R2_ACCOUNT_ID"; exit 1; }
+	@test -n "$(R2_BUCKET)" || { echo "ERRO: defina R2_BUCKET"; exit 1; }
+	aws s3 sync data/public/ s3://$(R2_BUCKET)/ \
+		--profile r2 \
+		--endpoint-url https://$(R2_ACCOUNT_ID).r2.cloudflarestorage.com \
+		--delete
+
+# Aplica a política de CORS (pipelines/config/r2-cors.json) ao bucket R2 —
+# necessária pra o navegador (front num host, dados noutro) poder ler os
+# Parquet via HTTP range request. Rodar uma vez (ou após editar o JSON).
+r2-cors:
+	@test -n "$(R2_ACCOUNT_ID)" || { echo "ERRO: defina R2_ACCOUNT_ID"; exit 1; }
+	@test -n "$(R2_BUCKET)" || { echo "ERRO: defina R2_BUCKET"; exit 1; }
+	aws s3api put-bucket-cors --bucket $(R2_BUCKET) \
+		--profile r2 \
+		--endpoint-url https://$(R2_ACCOUNT_ID).r2.cloudflarestorage.com \
+		--cors-configuration file://pipelines/config/r2-cors.json
