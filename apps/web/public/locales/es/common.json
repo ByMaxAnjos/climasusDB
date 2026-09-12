@@ -11,6 +11,7 @@
   "time_series_title": "Serie temporal — {{name}}",
   "metric": {
     "deaths_total": "Muertes (grupos climáticamente sensibles)",
+    "deaths_circ": "Muertes cardiovasculares",
     "tmax": "Temperatura máxima (°C)",
     "precip": "Precipitación (mm)",
     "dlnm_rr": "Riesgo relativo (DLNM, calor)"
@@ -21,7 +22,7 @@
   "nav": {
     "explore": "Explorar",
     "catalog": "Catálogo de Datos",
-    "apps": "Aplicaciones",
+    "apps": "Quién usa los datos",
     "docs": "Documentación"
   }
 }

@@ -94,7 +94,7 @@ export function Explore({ forcedThemeId }: { forcedThemeId?: string } = {}) {
     })();
   }, []);
 
-  // Estações INMET (camada deck.gl) — dataset independente, sem dado sintético.
+  // Estações INMET (camada de círculos no mapa) — dataset independente, sem dado sintético.
   // Aproveita essa primeira query pós-status="ready" pra também checar se os
   // 3 datasets DLNM (Fase 2b, opcionais — `make dlnm`) existem no catálogo.
   useEffect(() => {
@@ -141,7 +141,7 @@ export function Explore({ forcedThemeId }: { forcedThemeId?: string } = {}) {
           setMapValues(map);
           return;
         }
-        const agg = metric === "deaths_total" ? "sum" : "avg";
+        const agg = metric.startsWith("deaths_") ? "sum" : "avg";
         const rows = await query<{ code_muni: number; value: number }>(
           `SELECT code_muni, CAST(${agg}(${metric}) AS DOUBLE) AS value FROM '${HEALTH_CLIMATE_FILE}' GROUP BY code_muni`,
         );
@@ -207,7 +207,8 @@ export function Explore({ forcedThemeId }: { forcedThemeId?: string } = {}) {
     return () => { cancelled = true; };
   }, [selectedMuni, status, metric, dlnmReady, allMunis]);
 
-  // Sazonalidade mensal (média/soma do indicador por mês, todos os anos) do município selecionado.
+  // Sazonalidade mensal (uma linha por ano-mês, todos os anos) do município selecionado —
+  // o boxplot em SeasonalityChart agrega por mês no cliente, mostrando a dispersão entre anos.
   useEffect(() => {
     if (!selectedMuni || status !== "ready" || isDlnmMetric(metric)) {
       setSeasonalityRows([]);
@@ -216,10 +217,10 @@ export function Explore({ forcedThemeId }: { forcedThemeId?: string } = {}) {
     let cancelled = false;
     (async () => {
       try {
-        const agg = metric === "deaths_total" ? "sum" : "avg";
+        const agg = metric.startsWith("deaths_") ? "sum" : "avg";
         const rows = await query<SeasonalityRow>(
-          `SELECT CAST(strftime(date, '%m') AS INTEGER) AS month, CAST(${agg}(${metric}) AS DOUBLE) AS value
-           FROM '${HEALTH_CLIMATE_FILE}' WHERE code_muni = ${selectedMuni.code} GROUP BY month ORDER BY month`,
+          `SELECT CAST(strftime(date, '%Y') AS INTEGER) AS year, CAST(strftime(date, '%m') AS INTEGER) AS month, CAST(${agg}(${metric}) AS DOUBLE) AS value
+           FROM '${HEALTH_CLIMATE_FILE}' WHERE code_muni = ${selectedMuni.code} GROUP BY year, month ORDER BY year, month`,
         );
         if (!cancelled) setSeasonalityRows(rows);
       } catch (err) {

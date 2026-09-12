@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { DlnmExposureRow, DlnmLagRow, DlnmSurfaceRow, HealthClimateRow, Metric } from "../../types";
 import { isDlnmMetric } from "../../types";
@@ -7,6 +8,8 @@ import { SeasonalityChart, type SeasonalityRow } from "./SeasonalityChart";
 import { DlnmOverallChart } from "./DlnmOverallChart";
 import { DlnmLagChart } from "./DlnmLagChart";
 import { DlnmSurfaceChart } from "./DlnmSurfaceChart";
+import { ChartExpandModal } from "./ChartExpandModal";
+import { Icon } from "../Icon";
 
 export type ChartView = "timeseries" | "comparison" | "seasonality" | "dlnm_overall" | "dlnm_lag" | "dlnm_surface";
 const HEALTH_VIEWS: ChartView[] = ["timeseries", "comparison", "seasonality"];
@@ -49,32 +52,66 @@ export function ChartPanel({
   dlnmSurfaceRows,
 }: ChartPanelProps) {
   const { t } = useTranslation("charts");
+  const [expanded, setExpanded] = useState(false);
   const views = isDlnmMetric(metric) ? DLNM_VIEWS : HEALTH_VIEWS;
   const activeView = views.includes(view) ? view : views[0];
 
+  function renderActiveChart(height?: number) {
+    switch (activeView) {
+      case "timeseries":
+        return <TimeSeriesChart rows={seriesRows} metric={metric} muniLabel={muniLabel} height={height} />;
+      case "comparison":
+        return <ComparisonBarChart values={comparisonValues} muniNames={muniNames} metric={metric} scopeLabel={scopeLabel} />;
+      case "seasonality":
+        return <SeasonalityChart rows={seasonalityRows} metric={metric} muniLabel={muniLabel} height={height} />;
+      case "dlnm_overall":
+        return <DlnmOverallChart rows={dlnmExposureRows} ufLabel={dlnmUfLabel} />;
+      case "dlnm_lag":
+        return <DlnmLagChart rows={dlnmLagRows} ufLabel={dlnmUfLabel} />;
+      case "dlnm_surface":
+        return <DlnmSurfaceChart rows={dlnmSurfaceRows} ufLabel={dlnmUfLabel} />;
+    }
+  }
+
   return (
     <div>
-      <div style={{ display: "flex", gap: 6, marginBottom: 16, flexWrap: "wrap" }}>
-        {views.map((v) => (
-          <button
-            key={v}
-            className={`nav-link${activeView === v ? " active" : ""}`}
-            style={{ border: "none", cursor: "pointer", background: activeView === v ? undefined : "transparent" }}
-            onClick={() => onViewChange(v)}
-          >
-            {t(`tabs.${v}`)}
-          </button>
-        ))}
+      <div style={{ display: "flex", gap: 6, marginBottom: 16, flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+          {views.map((v) => (
+            <button
+              key={v}
+              className={`nav-link${activeView === v ? " active" : ""}`}
+              style={{ border: "none", cursor: "pointer", background: activeView === v ? undefined : "transparent" }}
+              onClick={() => onViewChange(v)}
+            >
+              {t(`tabs.${v}`)}
+            </button>
+          ))}
+        </div>
+        <button
+          onClick={() => setExpanded(true)}
+          aria-label={t("expand")}
+          title={t("expand")}
+          style={{
+            display: "flex",
+            border: "none",
+            background: "transparent",
+            cursor: "pointer",
+            padding: 4,
+            color: "var(--ink-3)",
+          }}
+        >
+          <Icon name="expand" size={16} />
+        </button>
       </div>
 
-      {activeView === "timeseries" && <TimeSeriesChart rows={seriesRows} metric={metric} muniLabel={muniLabel} />}
-      {activeView === "comparison" && (
-        <ComparisonBarChart values={comparisonValues} muniNames={muniNames} metric={metric} scopeLabel={scopeLabel} />
+      {renderActiveChart()}
+
+      {expanded && (
+        <ChartExpandModal title={t(`tabs.${activeView}`)} onClose={() => setExpanded(false)}>
+          {renderActiveChart(520)}
+        </ChartExpandModal>
       )}
-      {activeView === "seasonality" && <SeasonalityChart rows={seasonalityRows} metric={metric} muniLabel={muniLabel} />}
-      {activeView === "dlnm_overall" && <DlnmOverallChart rows={dlnmExposureRows} ufLabel={dlnmUfLabel} />}
-      {activeView === "dlnm_lag" && <DlnmLagChart rows={dlnmLagRows} ufLabel={dlnmUfLabel} />}
-      {activeView === "dlnm_surface" && <DlnmSurfaceChart rows={dlnmSurfaceRows} ufLabel={dlnmUfLabel} />}
     </div>
   );
 }

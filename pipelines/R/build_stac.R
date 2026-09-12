@@ -45,8 +45,6 @@ build_stac_item <- function(path, rel_path, dataset, version, uf) {
   )
 }
 
-`%||%` <- function(x, y) if (is.null(x)) y else x
-
 build_stac_collection <- function(dataset, items) {
   list(
     stac_version = "1.0.0",

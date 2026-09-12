@@ -25,6 +25,7 @@ source("pipelines/R/bronze.R")
 source("pipelines/R/silver.R")
 source("pipelines/R/gold.R")
 source("pipelines/R/catalog.R")
+source("pipelines/R/run_national_common.R")
 
 cfg_base <- yaml::read_yaml("pipelines/config/br_full.yaml")
 
@@ -38,29 +39,7 @@ if (!dir.exists(cache_root)) {
 }
 ufs <- if (length(args) >= 2) strsplit(args[[2]], ",")[[1]] else cfg_base$uf_list
 
-for (uf in ufs) {
-  cli::cli_h1("UF: {uf}")
-  cfg <- cfg_base
-  cfg$uf <- uf
-
-  result <- tryCatch({
-    bronze_sim   <- get_bronze_sim_from_cache(cfg, cache_root) # local, sem rede
-    bronze_inmet <- get_bronze_inmet(cfg)                      # INMET: só via rede mesmo
-    filled_inmet <- fill_bronze_inmet(bronze_inmet, cfg)       # regra de bronze.R: nunca o cru
-    silver_sim   <- make_silver_sim(bronze_sim, cfg)
-    silver_inmet <- make_silver_inmet(filled_inmet, cfg)
-    health_daily <- make_health_daily(silver_sim, cfg)
-    make_health_climate_mart(health_daily, silver_inmet, cfg)
-    make_heatwave_events(filled_inmet, cfg)
-    make_dim_station(cfg)
-    "ok"
-  }, error = function(e) {
-    cli::cli_alert_danger("UF {uf} falhou: {conditionMessage(e)}")
-    "erro"
-  })
-
-  cli::cli_alert_info("UF {uf}: {result}")
-}
+run_national_pipeline(cfg_base, ufs, function(cfg) get_bronze_sim_from_cache(cfg, cache_root))
 
 build_catalog(cfg_base$paths$public)
 cli::cli_alert_success("Pipeline nacional (a partir do cache local) concluído.")

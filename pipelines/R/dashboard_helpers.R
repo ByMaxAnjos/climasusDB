@@ -3,8 +3,6 @@
 # função aqui baixa dado ou modifica data/public — só lê o que já foi
 # publicado por make national/make data-synth.
 
-`%||%` <- function(x, y) if (is.null(x)) y else x
-
 #' Caminhos completos das partições "mais recentes" de um dataset Gold,
 #' segundo data/public/catalog.json (já resolvido por pipelines/R/catalog.R —
 #' evita reimplementar a lógica de "qual versão é a latest" aqui).

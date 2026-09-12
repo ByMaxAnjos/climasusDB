@@ -2,8 +2,6 @@ import { useEffect, useRef } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Protocol } from "pmtiles";
-import { MapboxOverlay } from "@deck.gl/mapbox";
-import { ScatterplotLayer } from "@deck.gl/layers";
 import type { Metric } from "./types";
 import { dataUrl } from "./db";
 
@@ -26,7 +24,7 @@ export interface Station {
 interface MapProps {
   values: Record<number, number>; // code_muni -> valor do indicador atual
   metric: Metric;
-  stations: Station[]; // camada deck.gl de estações INMET
+  stations: Station[]; // camada de estações INMET (círculos nativos MapLibre)
   // Lista de abbrev_state a exibir — null = Brasil todo. Único mecanismo de
   // filtro, alimentado por Estado, Região (IBGE) OU Agrupamento (bioma/bacia/
   // saúde-agro-geopolítica): todos resolvem para "quais UFs mostrar" antes de
@@ -66,10 +64,20 @@ function mergeBbox(a: Bbox, b: Bbox): Bbox {
   return [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[2], b[2]), Math.max(a[3], b[3])];
 }
 
+function stationsToGeoJSON(stations: Station[]): GeoJSON.FeatureCollection<GeoJSON.Point> {
+  return {
+    type: "FeatureCollection",
+    features: stations.map((s) => ({
+      type: "Feature",
+      geometry: { type: "Point", coordinates: [s.longitude, s.latitude] },
+      properties: { station_code: s.station_code, station_name: s.station_name },
+    })),
+  };
+}
+
 export function Map({ values, metric, stations, filterUfs, onSelectMuni }: MapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
-  const overlayRef = useRef<MapboxOverlay | null>(null);
   const estadosRef = useRef<GeoJSON.FeatureCollection | null>(null);
   // ids com feature-state aplicado na última passada — permite limpar estados
   // obsoletos quando a métrica troca para um conjunto menor (ou vazio).
@@ -165,11 +173,19 @@ export function Map({ values, metric, stations, filterUfs, onSelectMuni }: MapPr
         map.getCanvas().style.cursor = "";
       });
 
-      // deck.gl interleaved: fica acima dos polígonos, abaixo de rótulos
-      // (não há rótulos no estilo mínimo do MVP, mas mantém o padrão certo).
-      const overlay = new MapboxOverlay({ interleaved: true, layers: [] });
-      overlayRef.current = overlay;
-      map.addControl(overlay as unknown as maplibregl.IControl);
+      // Estações INMET — círculos nativos do MapLibre, acima dos polígonos.
+      map.addSource("inmet-stations", { type: "geojson", data: stationsToGeoJSON([]) });
+      map.addLayer({
+        id: "inmet-stations-circle",
+        type: "circle",
+        source: "inmet-stations",
+        paint: {
+          "circle-radius": 4,
+          "circle-color": "#1d9bf0",
+          "circle-stroke-color": "#ffffff",
+          "circle-stroke-width": 1,
+        },
+      });
     });
 
     fetch(dataUrl("/geo/estados_br.geojson"))
@@ -273,21 +289,20 @@ export function Map({ values, metric, stations, filterUfs, onSelectMuni }: MapPr
 
   // Camada de estações INMET — atualiza sem tocar nos polígonos de município.
   useEffect(() => {
-    overlayRef.current?.setProps({
-      layers: [
-        new ScatterplotLayer<Station>({
-          id: "inmet-stations",
-          data: stations,
-          getPosition: (d) => [d.longitude, d.latitude],
-          getRadius: 6000,
-          getFillColor: [29, 155, 240, 210],
-          getLineColor: [255, 255, 255],
-          lineWidthMinPixels: 1,
-          stroked: true,
-          pickable: true,
-        }),
-      ],
-    });
+    const map = mapRef.current;
+    if (!map) return;
+
+    const applyStations = () => {
+      const source = map.getSource("inmet-stations") as maplibregl.GeoJSONSource | undefined;
+      source?.setData(stationsToGeoJSON(stations));
+    };
+
+    if (map.isStyleLoaded() && map.getSource("inmet-stations")) {
+      applyStations();
+      return;
+    }
+    map.once("idle", applyStations);
+    return () => { map.off("idle", applyStations); };
   }, [stations]);
 
   return <div ref={containerRef} style={{ width: "100%", height: "100%" }} />;

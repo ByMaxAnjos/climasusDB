@@ -7,6 +7,8 @@ import { CardMedia } from "../../components/CardMedia";
 import { dataUrl } from "../../db";
 import type { CatalogEntry, CatalogRoot } from "./types";
 
+const VISIBLE_DATASETS = new Set(["dim_station", "health_climate_daily"]);
+
 export function CatalogList() {
   const { t } = useTranslation("catalog");
   const { query: urlQuery } = useRoute();
@@ -19,8 +21,12 @@ export function CatalogList() {
     // no-store: catalog.json muda a cada publicação — sem isso um cache
     // HTTP antigo pode servir uma lista de datasets desatualizada.
     fetch(dataUrl("/data/catalog.json"), { cache: "no-store" })
+      .then((res) => {
+        if (!res.ok) throw new Error(`catalog.json: HTTP ${res.status}`);
+        return res;
+      })
       .then((res) => res.json() as Promise<CatalogRoot>)
-      .then((data) => setDatasets(data.datasets))
+      .then((data) => setDatasets(data.datasets.filter((d) => VISIBLE_DATASETS.has(d.name))))
       .catch(() => setError(true));
   }, []);
 

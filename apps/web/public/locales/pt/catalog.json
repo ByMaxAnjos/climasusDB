@@ -11,6 +11,7 @@
   "download_csv": "Baixar CSV",
   "license": "Licença",
   "coverage": "Cobertura",
+  "coverage_unavailable": "Cobertura indisponível no momento; os metadados e downloads continuam disponíveis.",
   "schema": "Schema",
   "column": "Coluna",
   "type": "Tipo",
@@ -25,17 +26,17 @@
   "dataset": {
     "dim_station": {
       "title": "Estações Meteorológicas",
-      "desc": "Metadados das estações INMET usadas na climatologia de Rondônia: código, nome, latitude e longitude.",
+      "desc": "Metadados das estações INMET usadas na integração clima-saúde: código, nome, latitude e longitude.",
       "keywords": ["INMET", "estações", "geolocalização"]
     },
     "health_climate_daily": {
       "title": "Saúde & Clima Diário",
-      "desc": "Série diária de óbitos em grupos climate-sensitive e variáveis climáticas (temperatura, precipitação, umidade) por município de Rondônia, 2018–2023.",
+      "desc": "Série diária de óbitos em grupos sensíveis ao clima e variáveis climáticas (temperatura, precipitação, umidade) por município, 2018–2023.",
       "keywords": ["mortalidade", "temperatura", "precipitação", "município", "série temporal"]
     },
     "heatwave_events": {
       "title": "Eventos de Onda de Calor",
-      "desc": "Eventos de onda de calor detectados nas estações INMET de RO (métodos OMS/OMM), com duração, severidade e classe de intensidade.",
+      "desc": "Eventos de onda de calor detectados nas estações INMET (métodos OMS/OMM), com duração, severidade e classe de intensidade.",
       "keywords": ["ondas de calor", "OMS/OMM", "severidade", "extremos climáticos"]
     },
     "health_climate_distributed_lag": {

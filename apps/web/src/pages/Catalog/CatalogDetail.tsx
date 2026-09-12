@@ -11,6 +11,8 @@ interface CoverageRow {
   max_y: number | null;
 }
 
+const VISIBLE_DATASETS = new Set(["dim_station", "health_climate_daily"]);
+
 // `from` é uma expressão FROM completa (ex. read_parquet([...]) sobre todas
 // as partições por UF) — a cobertura é do dataset nacional, não de uma UF só.
 function coverageSql(from: string, fieldNames: string[]): string | null {
@@ -26,34 +28,49 @@ function coverageSql(from: string, fieldNames: string[]): string | null {
   return null;
 }
 
+async function fetchJson<T>(path: string): Promise<T> {
+  const res = await fetch(dataUrl(path), { cache: "no-store" });
+  if (!res.ok) throw new Error(`${path}: HTTP ${res.status}`);
+  return res.json() as Promise<T>;
+}
+
 export function CatalogDetail({ dataset }: { dataset: string }) {
   const { t } = useTranslation("catalog");
   const [entry, setEntry] = useState<CatalogEntry | null>(null);
   const [pkg, setPkg] = useState<DataPackage | null>(null);
   const [coverage, setCoverage] = useState<CoverageRow | null>(null);
+  const [coverageError, setCoverageError] = useState(false);
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
     setEntry(null);
     setPkg(null);
     setCoverage(null);
+    setCoverageError(false);
     setError(false);
 
     (async () => {
       try {
+        if (!VISIBLE_DATASETS.has(dataset)) {
+          if (!cancelled) setError(true);
+          return;
+        }
         // no-store nos dois: catalog.json e datapackage.json são "ponteiros"
         // regeneráveis (catalog.R roda de novo a cada publicação) — um cache
         // HTTP antigo pode servir metadados desatualizados indefinidamente.
-        const catalog = (await (await fetch(dataUrl("/data/catalog.json"), { cache: "no-store" })).json()) as CatalogRoot;
+        const catalog = await fetchJson<CatalogRoot>("/data/catalog.json");
         const found = catalog.datasets.find((d) => d.name === dataset);
         if (!found) {
-          setError(true);
+          if (!cancelled) setError(true);
           return;
         }
+        if (cancelled) return;
         setEntry(found);
 
         const dpPath = found.path.replace(/data\.parquet$/, "datapackage.json");
-        const dp = (await (await fetch(dataUrl(`/data/${dpPath}`), { cache: "no-store" })).json()) as DataPackage;
+        const dp = await fetchJson<DataPackage>(`/data/${dpPath}`);
+        if (cancelled) return;
         setPkg(dp);
 
         const fields = dp.resources[0]?.schema.fields.map((f) => f.name) ?? [];
@@ -61,14 +78,21 @@ export function CatalogDetail({ dataset }: { dataset: string }) {
         const tables = partitions.map((_, i) => `${dataset}_detail_${i}.parquet`);
         const sql = coverageSql(`read_parquet([${tables.map((f) => `'${f}'`).join(", ")}])`, fields);
         if (sql) {
-          await Promise.all(partitions.map((p, i) => registerDataset(tables[i], `/data/${p.path}`)));
-          const rows = await query<CoverageRow>(sql);
-          setCoverage(rows[0] ?? null);
+          try {
+            await Promise.all(partitions.map((p, i) => registerDataset(tables[i], `/data/${p.path}`)));
+            const rows = await query<CoverageRow>(sql);
+            if (!cancelled) setCoverage(rows[0] ?? null);
+          } catch (err) {
+            console.error("Falha ao calcular cobertura do dataset:", err);
+            if (!cancelled) setCoverageError(true);
+          }
         }
       } catch {
-        setError(true);
+        if (!cancelled) setError(true);
       }
     })();
+
+    return () => { cancelled = true; };
   }, [dataset]);
 
   if (error) return <p className="page" style={{ color: "var(--heat)" }}>{t("error")}</p>;
@@ -88,7 +112,7 @@ export function CatalogDetail({ dataset }: { dataset: string }) {
       <p className="page-lede" style={{ fontSize: 13, color: "var(--muted)" }}>{pkg.name}</p>
       <p className="page-lede">{pkg.description}</p>
       <p className="page-lede">
-        {t("version")}: {pkg.version} · {t("rows")}: {pkg.rows.toLocaleString()}
+        {t("version")}: {pkg.version} · {t("rows")}: {entry.rows.toLocaleString()}
       </p>
       {entry.partitions?.length > 1 ? (
         // Dataset particionado (por UF, região, etc.): um botão por partição
@@ -145,6 +169,11 @@ export function CatalogDetail({ dataset }: { dataset: string }) {
             {coverage.min_y != null && ` · lat/lon ${coverage.min_y.toFixed(2)}–${coverage.max_y?.toFixed(2)}`}
           </p>
         </section>
+      )}
+      {coverageError && (
+        <p className="page-lede" style={{ marginTop: 20, color: "var(--muted)" }}>
+          {t("coverage_unavailable")}
+        </p>
       )}
 
       <section style={{ marginTop: 28 }}>

@@ -531,8 +531,6 @@ build_datapackage <- function(path, rel_path, meta, info) {
   )
 }
 
-`%||%` <- function(x, y) if (is.null(x)) y else x
-
 #' Constrói catalog.json raiz + 1 datapackage.json por dataset Gold encontrado.
 #' @param public_dir caminho para data/public
 build_catalog <- function(public_dir) {

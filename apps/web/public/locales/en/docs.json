@@ -2,15 +2,81 @@
   "index_title": "Documentation",
   "pipeline_link_intro": "For the full pipeline methodology (import, statistical modeling, thematic tutorials and R case studies), see the",
   "pipeline_link_label": "climasus4r (pkgdown) documentation",
-  "apps_title": "Applications",
+  "apps_title": "Who Uses the Data",
+  "apps_lede": "Examples of dashboards, research and tools showing how partners, external organizations, and the climasusDB team itself can reuse the published datasets. Cards marked \"example\" are internal demonstrations, not third-party use.",
+  "apps_empty_title": "No external use has been published yet",
+  "apps_empty_body": "This showcase will list initiatives that already reuse climasusDB data. Entries are manually curated to show real uses, with the responsible organization, datasets used and public link when available.",
+  "apps_share_label": "Share your project",
+  "apps_status": {
+    "active": "active",
+    "inactive": "inactive",
+    "prospecting": "in contact",
+    "example": "example"
+  },
+  "deaths_dashboard": {
+    "eyebrow": "Reuse example",
+    "title": "Climate-sensitive deaths dashboard",
+    "lede": "Demonstration dashboard built directly on the health_climate_daily dataset. It summarizes deaths in climate-sensitive groups, compares respiratory and circulatory subsets, and shows an exploratory monthly association with maximum temperature and precipitation.",
+    "loading": "Loading health_climate_daily aggregations…",
+    "error": "The dashboard could not be loaded.",
+    "kpis_label": "Key indicators",
+    "kpis": {
+      "deaths": "Climate-sensitive deaths",
+      "municipalities": "Municipalities",
+      "period": "Period",
+      "rows": "Rows analyzed"
+    },
+    "groups_title": "Death groups",
+    "groups_note": "Respiratory and circulatory subsets help open up the total climate-sensitive deaths. They are shown as monitored groups, not as mutually exclusive partitions of the total.",
+    "groups_legend": "Each bar sums the group's deaths over the whole period analyzed; groups may overlap and do not add up to the total.",
+    "groups": {
+      "total": "All climate-sensitive groups",
+      "resp": "Respiratory",
+      "circ": "Circulatory"
+    },
+    "trend_title": "Monthly death series",
+    "trend_note": "The series aggregates climate-sensitive deaths by month to reveal seasonal variation and periods of higher concentration.",
+    "trend_legend": "Line and area show the total climate-sensitive deaths summed for each month; hover a point for the exact value.",
+    "association_title": "Exploratory association with climate",
+    "association_note": "Each point represents one month. The chart compares the average monthly climate condition with the monthly total of climate-sensitive deaths; the line summarizes the linear trend.",
+    "association_legend": "Each point is one month; the dark line is the linear fit between the selected climate variable and the monthly death total.",
+    "correlation_caveat": "Simple correlation between monthly averages; it does not imply causation and does not control for other factors (e.g. infrastructure, age structure).",
+    "correlation_direction": {
+      "positive": "positive",
+      "negative": "negative"
+    },
+    "correlation_strength": {
+      "negligible": "negligible",
+      "weak": "weak",
+      "moderate": "moderate",
+      "strong": "strong"
+    },
+    "climate_label": "Climate variable",
+    "climate": {
+      "tmax": "Average maximum temperature (°C)",
+      "precip": "Average precipitation (mm)"
+    },
+    "correlation": "Monthly correlation",
+    "deaths_axis_total": "Deaths (total over period)",
+    "deaths_axis_monthly": "Deaths (monthly total)",
+    "month_axis": "Month",
+    "table_title": "Municipalities with most deaths in the period",
+    "table_note": "Top 10 municipalities by total climate-sensitive deaths; Tmax and precipitation are period averages, not sums.",
+    "table": {
+      "municipality": "Municipality",
+      "deaths": "Deaths",
+      "tmax": "Avg. tmax",
+      "precip": "Avg. precipitation"
+    }
+  },
   "coming_soon": "data coming soon",
   "app_unavailable": "This application does not have a published dataset yet.",
   "read_case_study": "Read the case study →",
   "page_not_found": "Page not found.",
   "overview": {
     "eyebrow": "Rondônia Climate and Health Center",
-    "title": "climasusDB: an open integrated database for climate, health and environment",
-    "lede": "climasusDB organizes public health, climate and environmental data into a local-first platform that can be queried in the browser and published to cloud storage. Its goal is to support analysis, visualization, applied research and product development in the climaSUS ecosystem.",
+    "title": "climasusDB: an open integrated database for climate, environment and One Health in Brazil",
+    "lede": "climasusDB organizes public data on climate, environment and health in Brazil into an open, versioned database ready for reuse. It supports research, surveillance, visualization and digital products from a One Health perspective.",
     "institution_title": "Institutional context",
     "institution_body": "climasusDB is part of the Rondônia Climate and Health Center and the broader climaSUS ecosystem. Development is funded by INCT-Conexão, with a focus on open infrastructure for analyzing climate risks and health outcomes in Brazil.",
     "sections": [
@@ -18,7 +84,7 @@
         "title": "What climasusDB is",
         "body": [
           "It is the data component of climaSUS: an organized, versioned and documented layer that transforms public systems into analysis-ready datasets.",
-          "Health data primarily comes from DATASUS; climate data includes observational sources such as INMET and, when published, gridded sources such as ERA5, CHIRPS, PRODES and CAMS. Methodological transformation is handled by the climasus4r package."
+          "Health data currently comes from DATASUS; climate data includes observational sources such as INMET and gridded sources such as ERA5, CHIRPS, PRODES and CAMS. Methodological transformation is handled by the climasus4r package. The One Health framing guides integration across climate, environment and human health without implying that every domain, such as animal health, is already published."
         ]
       },
       {
@@ -48,19 +114,19 @@
       {
         "title": "Explore",
         "body": [
-          "The main interactive analysis area. It supports navigation by municipality, state, indicator group and time series, using DuckDB queries directly over the published Parquet files."
+          "The main interactive analysis area. It supports navigation by municipality, state, indicator group and time series. This version prioritizes a single simple, communicable indicator: deaths in climate-sensitive groups."
         ]
       },
       {
         "title": "Data Catalog",
         "body": [
-          "A navigable repository of published datasets. It shows version, schema, provenance, coverage and download links. Parquet is always available; zipped CSV appears only for small or summarized datasets."
+          "A navigable repository of the core datasets exposed to the public: INMET weather stations and the daily health-climate series. It shows version, schema, provenance, coverage and download links."
         ]
       },
       {
-        "title": "Applications",
+        "title": "Who Uses the Data",
         "body": [
-          "A space for third-party or partner products that shared applications, dashboards, studies or prototypes built with climasusDB data or other products from the climaSUS ecosystem."
+          "A curated showcase of uses and examples reusing datasets published by climasusDB in applications, dashboards, studies, training materials or prototypes."
         ]
       },
       {
@@ -124,7 +190,8 @@
       "body": [
         "Every Gold dataset published under data/public/gold/ is a Parquet file with provenance metadata embedded in the Arrow schema, under the \"climasus_meta\" key (written by climasus4r::write_parquet_climasus()). This metadata includes the source DATASUS system, pipeline stage, aggregation type, and a processing history.",
         "Versioning follows vX.Y.Z per dataset (e.g. health_climate_daily/v1.0.0). The path is always gold/{dataset}/v{version}/uf={uf}/data.parquet — the schema is identical between synthetic and real versions, so nothing in the frontend needs to change when a dataset moves from prototype to real data.",
-        "data/public/catalog.json lists every published dataset; each has a sibling datapackage.json (Frictionless Data standard) with the full schema and the same provenance metadata."
+        "The public catalog highlights two core datasets: health_climate_daily, the municipality-day table combining climate-sensitive deaths and daily climate, and dim_station, the INMET stations used in the integration. Other derived products may exist in the pipeline, but they stay out of the main navigation until they pass publication curation.",
+        "Each dataset has a sibling datapackage.json (Frictionless Data standard) with the full schema and the same provenance metadata."
       ]
     },
     "querying": {
@@ -132,22 +199,22 @@
       "body": [
         "climasusDB has no backend: the browser runs a WebAssembly build of DuckDB and queries the published Parquet files directly via HTTP range requests — only the bytes needed for each query are downloaded.",
         "The same Parquet files can be opened outside the platform, with no dependency on climasusDB at all: with the DuckDB CLI (SELECT * FROM read_parquet('URL')), with pandas/pyarrow in Python, or with arrow::read_parquet() in R.",
-        "Example query used by Explore: SELECT code_muni, avg(tmax) FROM health_climate_daily GROUP BY code_muni."
+        "Example query used by Explore: SELECT code_muni, avg(precip) FROM health_climate_daily GROUP BY code_muni."
       ]
     },
     "catalog-contract": {
       "title": "Catalog contract",
       "body": [
-        "catalog.json guarantees: dataset name, latest version, list of available versions, synthetic-data flag, relative Parquet path, and row count. datapackage.json guarantees the column schema and the full climasus_meta metadata.",
-        "Tabular datasets (like health_climate_daily) use this Frictionless Data contract, not STAC. The STAC catalog (build_stac.R) is reserved for future gridded raster datasets (ERA5, CHIRPS) once those are published — this avoids duplicating two cataloging systems for the same tabular data type."
+        "catalog.json guarantees: dataset name, latest version, list of available versions, synthetic-data flag, relative Parquet path, and row count. The public interface filters this list to show only datasets curated for main navigation. datapackage.json guarantees the column schema and the full climasus_meta metadata.",
+        "Every dataset exposed in the Data Catalog follows this Frictionless Data contract. Technical or derived products may exist in the pipeline, but they enter public navigation only after schema, coverage, provenance and usage clarity are reviewed."
       ]
     },
     "heat-cardio": {
-      "title": "Heat and mortality in Rondônia",
+      "title": "Heat and mortality",
       "body": [
-        "This theme applies to Rondônia's published data the same methodological approach from a climasus4r case study on cardiovascular mortality in the elderly and heatwaves: detect heatwave events (WHO/WMO methods) from INMET station temperature series and relate them to the daily death series per municipality.",
-        "The published datasets backing this theme are health_climate_daily (daily deaths and climate per municipality, 2018–2023) and heatwave_events (heatwave events detected at RO's INMET stations, with a severity index and intensity class).",
-        "For the full statistical methodology (DLNM, attributable burden), see the corresponding advanced-modeling tutorial in the climasus4r documentation."
+        "This theme documents one methodological possibility in the climaSUS ecosystem: relating heat extremes to daily health and climate series by municipality.",
+        "In the current interface, public exploration focuses on health_climate_daily and the INMET station layer. Specialized models remain methodological pipeline documentation and are not shown as main Explore indicators.",
+        "Rondônia was the original case-study area for this approach; today the data structure supports national analyses as new products pass publication curation."
       ]
     }
   }

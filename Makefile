@@ -1,4 +1,4 @@
-.PHONY: setup link-data data-synth data-real data-real-manifest geo-br tiles-br web publish publish-r2 r2-cors national gridded dlnm muni-summary stac check check-small-cells dashboard
+.PHONY: setup link-data data-synth data-real data-real-manifest geo-br tiles-br web publish-r2 r2-cors national gridded dlnm muni-summary stac check check-small-cells dashboard
 
 setup: link-data
 	mkdir -p data/bronze data/silver data/public/gold
@@ -65,13 +65,7 @@ check-small-cells:
 dashboard:
 	Rscript -e 'rmarkdown::render("pipelines/R/dashboard.Rmd", output_file = "index.html", output_dir = "docs/dashboard", knit_root_dir = getwd())'
 
-# Fase 5 — requer projeto GCP configurado (infra/setup_gcp.sh) e DATA_BUCKET definido.
-# Guard obrigatório: rsync -d é destrutivo — DATA_BUCKET vazio apagaria o bucket errado.
-publish:
-	@test -n "$(DATA_BUCKET)" || { echo "ERRO: defina DATA_BUCKET (make publish DATA_BUCKET=meu-bucket)"; exit 1; }
-	gsutil -m rsync -r -d data/public/ gs://$(DATA_BUCKET)/
-
-# Cloudflare R2 (S3-compatible). Requer credenciais de uma API Token R2
+# Cloudflare R2 (S3-compatible) — publicação real dos dados públicos. Requer credenciais de uma API Token R2
 # (dashboard → R2 → Manage API Tokens) configuradas em `aws configure
 # --profile r2`, e R2_ACCOUNT_ID / R2_BUCKET definidos.
 # Uso: make publish-r2 R2_ACCOUNT_ID=xxxx R2_BUCKET=climasusdb-gold

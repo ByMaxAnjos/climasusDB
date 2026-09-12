@@ -13,6 +13,8 @@
   "brazil_scope": "Brasil",
   "no_data": "Sin datos para esta selección.",
   "how_to_interpret": "Cómo interpretar",
+  "expand": "Ampliar",
+  "collapse": "Cerrar",
   "months": ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
   "export": {
     "csv": "Descargar CSV",
@@ -32,7 +34,7 @@
   "interpret": {
     "timeseries": "Cada punto es el valor del indicador en un día. Pase el cursor sobre la línea para ver el valor exacto. Picos y tendencias a lo largo del tiempo pueden indicar eventos climáticos (olas de calor/frío) o estacionalidad.",
     "comparison": "Municipios ordenados de mayor a menor valor (top 15) dentro de la región/estado seleccionado. Útil para identificar valores atípicos — municipios con valores muy por encima de su entorno.",
-    "seasonality": "Promedio (o suma, para muertes) del indicador por mes, considerando todos los años disponibles en el municipio seleccionado. Ayuda a identificar patrones estacionales, como aumento de temperatura en sep-oct o de precipitación en la temporada de lluvias.",
+    "seasonality": "Cada caja resume los valores del indicador en ese mes, uno por año disponible: la línea central es la mediana, la caja cubre el 50% central y los puntos fuera de los bigotes son años atípicos. Ayuda a identificar patrones estacionales (aumento de temperatura en sep-oct, precipitación en la temporada de lluvias) y cuánto varía ese patrón de un año a otro.",
     "dlnm_overall": "Riesgo relativo acumulado (todos los rezagos combinados) en función de la temperatura, para todo el estado que contiene el municipio seleccionado — no una estimación específica del municipio. RR=1 (línea discontinua) es la referencia (la mediana histórica del estado). La banda sombreada es el intervalo de confianza del 95%; los puntos marcan los percentiles 25/50/75/90/95/99 de la temperatura observada.",
     "dlnm_lag": "Riesgo relativo aislado por cada día de rezago (0 a 21 días después de la exposición), en la temperatura del percentil 75 del estado. Muestra cuántos días después de un día caluroso aparece el riesgo de muerte — útil para saber si el efecto es inmediato o tardío.",
     "dlnm_surface": "Mapa de calor combinando temperatura (eje vertical) y rezago (eje horizontal): rojo = riesgo elevado (log RR > 0), azul = riesgo reducido (log RR < 0) en esa combinación. Ofrece la visión completa de dónde en la grilla temperatura x tiempo el efecto es más fuerte."

@@ -13,6 +13,8 @@
   "brazil_scope": "Brazil",
   "no_data": "No data for this selection.",
   "how_to_interpret": "How to interpret",
+  "expand": "Expand",
+  "collapse": "Close",
   "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
   "export": {
     "csv": "Download CSV",
@@ -32,7 +34,7 @@
   "interpret": {
     "timeseries": "Each point is the indicator's value on a given day. Hover over the line to see the exact value. Peaks and trends over time can indicate climate events (heatwaves/coldwaves) or seasonality.",
     "comparison": "Municipalities ranked from highest to lowest value (top 15) within the selected region/state. Useful for spotting outliers — municipalities with values well above their surroundings.",
-    "seasonality": "Average (or sum, for deaths) of the indicator per month, across all available years for the selected municipality. Helps identify seasonal patterns, such as higher temperatures in Sep-Oct or higher rainfall during the wet season.",
+    "seasonality": "Each box summarizes the indicator's values for that month, one per available year: the center line is the median, the box spans the middle 50%, and points beyond the whiskers are atypical years. Helps identify seasonal patterns (higher temperatures in Sep-Oct, rainfall during the wet season) and how much that pattern varies from year to year.",
     "dlnm_overall": "Cumulative relative risk (all lags combined) as a function of temperature, for the whole state containing the selected municipality — not a municipality-specific estimate. RR=1 (dashed line) is the reference (the state's historical median). The shaded band is the 95% confidence interval; the dots mark the 25/50/75/90/95/99th percentiles of observed temperature.",
     "dlnm_lag": "Relative risk isolated by day of lag (0 to 21 days after exposure), at the state's 75th percentile temperature. Shows how many days after a hot day the mortality risk shows up — useful to tell whether the effect is immediate or delayed.",
     "dlnm_surface": "Heatmap combining temperature (vertical axis) and lag (horizontal axis): red = elevated risk (log RR > 0), blue = reduced risk (log RR < 0) at that combination. Gives the full picture of where in the temperature x time grid the effect is strongest."

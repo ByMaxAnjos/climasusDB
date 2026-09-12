@@ -10,7 +10,8 @@
   "select_municipality": "Selecione um município no mapa",
   "time_series_title": "Série temporal — {{name}}",
   "metric": {
-    "deaths_total": "Óbitos (grupos climate-sensitive)",
+    "deaths_total": "Óbitos (grupos sensíveis ao clima)",
+    "deaths_circ": "Óbitos cardiovasculares",
     "tmax": "Temperatura máxima (°C)",
     "precip": "Precipitação (mm)",
     "dlnm_rr": "Risco relativo (DLNM, calor)"
@@ -21,7 +22,7 @@
   "nav": {
     "explore": "Explorar",
     "catalog": "Catálogo de Dados",
-    "apps": "Aplicações",
+    "apps": "Quem usa os dados",
     "docs": "Documentação"
   }
 }

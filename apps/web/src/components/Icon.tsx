@@ -1,5 +1,6 @@
 // Ícones simples desenhados à mão (stroke, 24x24) — evita puxar uma
-// biblioteca de ícones só para ~11 glifos usados nos cards de Catálogo/Apps.
+// biblioteca de ícones só para ~12 glifos usados nos cards de Catálogo/Apps
+// e nos controles do painel de gráficos.
 export type IconKey =
   | "antenna"
   | "bar-chart"
@@ -11,7 +12,8 @@ export type IconKey =
   | "gauge"
   | "link"
   | "shield"
-  | "droplet";
+  | "droplet"
+  | "expand";
 
 const PATHS: Record<IconKey, React.ReactNode> = {
   antenna: (
@@ -73,6 +75,14 @@ const PATHS: Record<IconKey, React.ReactNode> = {
   ),
   shield: <path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z" />,
   droplet: <path d="M12 2s7 8 7 13a7 7 0 1 1-14 0c0-5 7-13 7-13z" />,
+  expand: (
+    <>
+      <path d="M9 3H4v5" />
+      <path d="M15 3h5v5" />
+      <path d="M20 15v5h-5" />
+      <path d="M4 15v5h5" />
+    </>
+  ),
 };
 
 export function Icon({ name, size = 28 }: { name: IconKey; size?: number }) {

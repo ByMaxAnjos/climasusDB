@@ -11,6 +11,7 @@
   "download_csv": "Download CSV",
   "license": "License",
   "coverage": "Coverage",
+  "coverage_unavailable": "Coverage is unavailable right now; metadata and downloads remain available.",
   "schema": "Schema",
   "column": "Column",
   "type": "Type",
@@ -25,17 +26,17 @@
   "dataset": {
     "dim_station": {
       "title": "Weather Stations",
-      "desc": "INMET station metadata used for Rondônia's climatology: code, name, latitude and longitude.",
+      "desc": "INMET station metadata used for climate-health integration: code, name, latitude and longitude.",
       "keywords": ["INMET", "stations", "geolocation"]
     },
     "health_climate_daily": {
       "title": "Daily Health & Climate",
-      "desc": "Daily series of deaths in climate-sensitive groups and climate variables (temperature, precipitation, humidity) per municipality in Rondônia, 2018–2023.",
+      "desc": "Daily series of deaths in climate-sensitive groups and climate variables (temperature, precipitation, humidity) per municipality, 2018–2023.",
       "keywords": ["mortality", "temperature", "precipitation", "municipality", "time series"]
     },
     "heatwave_events": {
       "title": "Heatwave Events",
-      "desc": "Heatwave events detected at RO's INMET stations (WHO/WMO methods), with duration, severity, and intensity class.",
+      "desc": "Heatwave events detected at INMET stations (WHO/WMO methods), with duration, severity, and intensity class.",
       "keywords": ["heatwaves", "WHO/WMO", "severity", "climate extremes"]
     },
     "health_climate_distributed_lag": {

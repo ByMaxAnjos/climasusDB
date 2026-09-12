@@ -9,9 +9,10 @@ interface TimeSeriesChartProps {
   rows: HealthClimateRow[];
   metric: Metric;
   muniLabel: string | null;
+  height?: number;
 }
 
-export function TimeSeriesChart({ rows, metric, muniLabel }: TimeSeriesChartProps) {
+export function TimeSeriesChart({ rows, metric, muniLabel, height = 260 }: TimeSeriesChartProps) {
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -24,7 +25,7 @@ export function TimeSeriesChart({ rows, metric, muniLabel }: TimeSeriesChartProp
     const label = t(`metric.${metric}`);
     const plot = Plot.plot({
       width: container.clientWidth || 640,
-      height: 260,
+      height,
       marginLeft: 50,
       x: { type: "utc", label: t("date_axis") },
       y: { label, grid: true },
@@ -38,7 +39,7 @@ export function TimeSeriesChart({ rows, metric, muniLabel }: TimeSeriesChartProp
 
     container.appendChild(plot);
     return () => plot.remove();
-  }, [rows, metric, t]);
+  }, [rows, metric, height, t]);
 
   return (
     <div>

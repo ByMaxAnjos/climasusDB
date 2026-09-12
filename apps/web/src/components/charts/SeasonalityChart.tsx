@@ -6,6 +6,7 @@ import { ExportButtons } from "./ExportButtons";
 import { InterpretGuide } from "./InterpretGuide";
 
 export interface SeasonalityRow {
+  year: number;
   month: number; // 1-12
   value: number;
 }
@@ -14,9 +15,10 @@ interface SeasonalityChartProps {
   rows: SeasonalityRow[];
   metric: Metric;
   muniLabel: string | null;
+  height?: number;
 }
 
-export function SeasonalityChart({ rows, metric, muniLabel }: SeasonalityChartProps) {
+export function SeasonalityChart({ rows, metric, muniLabel, height = 260 }: SeasonalityChartProps) {
   const { t } = useTranslation(["common", "charts"]);
   const containerRef = useRef<HTMLDivElement>(null);
   const monthLabels = t("charts:months", { returnObjects: true, defaultValue: [] }) as string[];
@@ -33,22 +35,20 @@ export function SeasonalityChart({ rows, metric, muniLabel }: SeasonalityChartPr
     if (!muniLabel || data.length === 0) return;
 
     const label = t(`metric.${metric}`);
+    // Boxplot por mês (um ponto por ano-mês) em vez de só a média — mostra a
+    // dispersão entre anos, não apenas o valor típico.
     const plot = Plot.plot({
       width: container.clientWidth || 640,
-      height: 260,
+      height,
       marginLeft: 50,
-      x: { label: null },
+      x: { label: null, domain: monthLabels.length ? monthLabels : undefined },
       y: { label, grid: true },
-      marks: [
-        Plot.barY(data, { x: "label", y: "value", fill: "#1d9bf0" }),
-        Plot.tip(data, Plot.pointer({ x: "label", y: "value" })),
-        Plot.ruleY([0]),
-      ],
+      marks: [Plot.boxY(data, { x: "label", y: "value", fill: "#1d9bf0" }), Plot.ruleY([0])],
     });
 
     container.appendChild(plot);
     return () => plot.remove();
-  }, [data, metric, muniLabel, t]);
+  }, [data, metric, muniLabel, height, monthLabels, t]);
 
   return (
     <div>

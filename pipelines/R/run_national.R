@@ -19,38 +19,14 @@ source("pipelines/R/bronze.R")
 source("pipelines/R/silver.R")
 source("pipelines/R/gold.R")
 source("pipelines/R/catalog.R")
+source("pipelines/R/run_national_common.R")
 
 cfg_base <- yaml::read_yaml("pipelines/config/br_full.yaml")
 
 args <- commandArgs(trailingOnly = TRUE)
 ufs <- if (length(args) >= 1) strsplit(args[[1]], ",")[[1]] else cfg_base$uf_list
 
-for (uf in ufs) {
-  cli::cli_h1("UF: {uf}")
-  cfg <- cfg_base
-  cfg$uf <- uf # os wrappers de bronze/silver/gold já são parametrizados por cfg$uf
-
-  result <- tryCatch({
-    bronze_sim   <- get_bronze_sim(cfg)
-    bronze_inmet <- get_bronze_inmet(cfg)
-    # sus_climate_fill_inmet() ANTES de qualquer consumo da série INMET —
-    # silver, mart e heatwaves usam a versão preenchida, não o bronze bruto
-    # (ver comentário em bronze.R::fill_bronze_inmet()).
-    filled_inmet <- fill_bronze_inmet(bronze_inmet, cfg)
-    silver_sim   <- make_silver_sim(bronze_sim, cfg)
-    silver_inmet <- make_silver_inmet(filled_inmet, cfg)
-    health_daily <- make_health_daily(silver_sim, cfg)
-    make_health_climate_mart(health_daily, silver_inmet, cfg)
-    make_heatwave_events(filled_inmet, cfg)
-    make_dim_station(cfg) # sem rede (station_meta.parquet embutido) — faltava aqui, só em _targets.R (RO)
-    "ok"
-  }, error = function(e) {
-    cli::cli_alert_danger("UF {uf} falhou: {conditionMessage(e)}")
-    "erro"
-  })
-
-  cli::cli_alert_info("UF {uf}: {result}")
-}
+run_national_pipeline(cfg_base, ufs, get_bronze_sim)
 
 build_catalog(cfg_base$paths$public)
 

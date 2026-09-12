@@ -4,6 +4,7 @@ import { Explore } from "./pages/Explore";
 import { CatalogList } from "./pages/Catalog/CatalogList";
 import { CatalogDetail } from "./pages/Catalog/CatalogDetail";
 import { AppsGallery } from "./pages/Apps/AppsGallery";
+import { DeathsDashboard } from "./pages/Apps/DeathsDashboard";
 import { ThemeApp } from "./pages/Apps/ThemeApp";
 import { DocsIndex } from "./pages/Docs/DocsIndex";
 import { DocsPage } from "./pages/Docs/DocsPage";
@@ -20,6 +21,7 @@ function renderPage(path: string, param: string | null) {
     case "catalog":
       return param ? <CatalogDetail dataset={param} /> : <CatalogList />;
     case "apps":
+      if (param === "deaths-dashboard") return <DeathsDashboard />;
       return param ? <ThemeApp themeId={param} /> : <AppsGallery />;
     case "docs":
       return param ? <DocsPage page={param} /> : <DocsIndex />;

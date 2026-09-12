@@ -1,6 +1,8 @@
 # climasusDB
 
-Componente de dados do ecossistema climaSUS: plataforma aberta que integra dados de saúde (DATASUS), clima (INMET, ERA5) e ambiente do Brasil. Processamento 100% via [climasus4r](https://github.com/ByMaxAnjos/climasus4r); portal público local-first (Parquet estático + DuckDB-WASM, sem backend).
+Base aberta de dados integrados sobre clima, ambiente e Saúde Única no Brasil.
+
+Componente de dados do ecossistema climaSUS: plataforma aberta que integra dados públicos de saúde (DATASUS), clima (INMET, ERA5) e ambiente do Brasil. Processamento 100% via [climasus4r](https://github.com/ByMaxAnjos/climasus4r); portal público local-first (Parquet estático + DuckDB-WASM, sem backend).
 
 ## Como rodar (3 comandos)
 

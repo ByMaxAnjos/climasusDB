@@ -446,3 +446,80 @@ a.card.card-media {
     height: 68px;
   }
 }
+
+/* ChartExpandModal — <dialog> nativo: showModal() já cuida de backdrop,
+   fechar no Escape e focus trap; só estilizamos a caixa e o backdrop. */
+.chart-expand-modal {
+  border: none;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lift);
+  padding: 24px;
+  width: min(1100px, 90vw);
+  max-height: 90vh;
+  background: var(--paper-3);
+  color: var(--ink);
+}
+.chart-expand-modal::backdrop {
+  background: rgba(5, 46, 43, 0.45);
+}
+
+/* ---------- dashboard demonstrativo ---------- */
+.deaths-dashboard {
+  max-width: 1180px;
+}
+.dashboard-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px;
+  margin: 26px 0;
+}
+.dashboard-kpis > div {
+  background: var(--paper-3);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: var(--shadow-soft);
+}
+.dashboard-kpis strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 24px;
+  line-height: 1.15;
+  color: var(--ink);
+}
+.dashboard-section {
+  padding: 26px 0;
+  border-top: 1px solid var(--rule);
+}
+.dashboard-section h3 {
+  margin: 0 0 8px 0;
+  font-size: 23px;
+}
+.dashboard-section-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.dashboard-section-header label {
+  color: var(--muted);
+  font-size: 14px;
+}
+.dashboard-correlation {
+  display: inline-block;
+  margin: 0 0 12px 0;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(14, 122, 95, 0.1);
+  color: var(--accent);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12px;
+}
+.dashboard-chart-note {
+  max-width: 820px;
+  margin: 8px 0 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
