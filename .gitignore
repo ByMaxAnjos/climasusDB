@@ -22,6 +22,13 @@ apps/web/public/tiles/
 figures/
 tables/
 pipelines/R/scratch/
-docs/manuscript/*.docx
 # Painel interno (make dashboard) — regenerável, reflete o estado local de data/public/
 docs/dashboard/
+# Documentos internos de planejamento/submissão — não fazem parte do produto
+# público (rascunho de manuscrito, revisões internas, roadmap, proposta de
+# fomento). Nunca comitar; se precisar compartilhar, use outro canal.
+docs/manuscript/
+docs/reviews/
+docs/PUBLICATION_ROADMAP.md
+docs/PLANO.md
+projeto_climasusdb.md
