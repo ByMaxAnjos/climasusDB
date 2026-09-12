@@ -82,6 +82,19 @@ publish-r2:
 		--profile r2 \
 		--endpoint-url https://$(R2_ACCOUNT_ID).r2.cloudflarestorage.com \
 		--delete
+	# Segunda passada só pra *.json (catalog.json, datapackage.json, STAC):
+	# são "ponteiros" que catalog.R regenera a cada publicação — sem
+	# Cache-Control explícito, o R2 não envia nenhum e navegadores aplicam
+	# cache heurístico, servindo metadados desatualizados por horas. `cp
+	# --recursive` (não `sync`) força reenviar o header mesmo quando o
+	# conteúdo não mudou.
+	aws s3 cp data/public/ s3://$(R2_BUCKET)/ \
+		--profile r2 \
+		--endpoint-url https://$(R2_ACCOUNT_ID).r2.cloudflarestorage.com \
+		--recursive --exclude "*" --include "*.json" \
+		--cache-control "no-cache" \
+		--content-type "application/json" \
+		--metadata-directive REPLACE
 
 # Aplica a política de CORS (pipelines/config/r2-cors.json) ao bucket R2 —
 # necessária pra o navegador (front num host, dados noutro) poder ler os

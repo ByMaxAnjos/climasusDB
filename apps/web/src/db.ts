@@ -119,7 +119,11 @@ let dlnmAvailable = false;
 async function ensureDatasetsRegistered(): Promise<void> {
   if (!datasetsReadyPromise) {
     datasetsReadyPromise = (async () => {
-      const res = await fetch(dataUrl("/data/catalog.json"));
+      // no-store: catalog.json é um "ponteiro" que muda toda vez que um
+      // dataset é publicado/removido — sem isso, um cache HTTP antigo (do
+      // navegador ou de borda) pode servir uma versão desatualizada
+      // indefinidamente, já que o R2 não envia Cache-Control por padrão.
+      const res = await fetch(dataUrl("/data/catalog.json"), { cache: "no-store" });
       if (!res.ok) throw new Error(`catalog.json: HTTP ${res.status}`);
       const catalog: Catalog = await res.json();
       await createUnionView(HEALTH_CLIMATE_FILE, "health_climate_daily", catalog);

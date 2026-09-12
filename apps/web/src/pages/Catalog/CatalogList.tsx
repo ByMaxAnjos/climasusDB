@@ -16,7 +16,9 @@ export function CatalogList() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    fetch(dataUrl("/data/catalog.json"))
+    // no-store: catalog.json muda a cada publicação — sem isso um cache
+    // HTTP antigo pode servir uma lista de datasets desatualizada.
+    fetch(dataUrl("/data/catalog.json"), { cache: "no-store" })
       .then((res) => res.json() as Promise<CatalogRoot>)
       .then((data) => setDatasets(data.datasets))
       .catch(() => setError(true));

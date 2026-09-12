@@ -41,7 +41,10 @@ export function CatalogDetail({ dataset }: { dataset: string }) {
 
     (async () => {
       try {
-        const catalog = (await (await fetch(dataUrl("/data/catalog.json"))).json()) as CatalogRoot;
+        // no-store nos dois: catalog.json e datapackage.json são "ponteiros"
+        // regeneráveis (catalog.R roda de novo a cada publicação) — um cache
+        // HTTP antigo pode servir metadados desatualizados indefinidamente.
+        const catalog = (await (await fetch(dataUrl("/data/catalog.json"), { cache: "no-store" })).json()) as CatalogRoot;
         const found = catalog.datasets.find((d) => d.name === dataset);
         if (!found) {
           setError(true);
@@ -50,7 +53,7 @@ export function CatalogDetail({ dataset }: { dataset: string }) {
         setEntry(found);
 
         const dpPath = found.path.replace(/data\.parquet$/, "datapackage.json");
-        const dp = (await (await fetch(dataUrl(`/data/${dpPath}`))).json()) as DataPackage;
+        const dp = (await (await fetch(dataUrl(`/data/${dpPath}`), { cache: "no-store" })).json()) as DataPackage;
         setPkg(dp);
 
         const fields = dp.resources[0]?.schema.fields.map((f) => f.name) ?? [];
