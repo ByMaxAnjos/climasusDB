@@ -15,7 +15,7 @@ export interface HealthClimateRow {
 
 export type HealthMetric = Extract<
   keyof HealthClimateRow,
-  "deaths_total" | "tmax" | "precip"
+  "deaths_total" | "precip"
 >;
 
 // "dlnm_rr" não é uma coluna de health_climate_daily — é grão UF (não
@@ -32,7 +32,6 @@ export function isDlnmMetric(metric: Metric): metric is "dlnm_rr" {
 // Rótulos vêm do i18n (chave metric.<key> em public/locales/*/common.json).
 export const METRICS: { key: Metric }[] = [
   { key: "deaths_total" },
-  { key: "tmax" },
   { key: "precip" },
   { key: "dlnm_rr" },
 ];
