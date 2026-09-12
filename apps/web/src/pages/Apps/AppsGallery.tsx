@@ -16,7 +16,7 @@ export function AppsGallery() {
           <h3 style={{ margin: "0 0 8px 0" }}>{t("apps_empty_title")}</h3>
           <p className="page-lede" style={{ maxWidth: 720 }}>{t("apps_empty_body")}</p>
           <p style={{ marginTop: 14 }}>
-            <a className="btn btn-primary" href="mailto:max.anjos@campus.ul.pt">
+            <a className="btn btn-primary" href="mailto:max.anjos@ufjf.br">
               {t("apps_share_label")}
             </a>
           </p>

@@ -74,11 +74,11 @@
   "read_case_study": "Ler o estudo de caso →",
   "page_not_found": "Página não encontrada.",
   "overview": {
-    "eyebrow": "Centro de Clima de Saúde de Rondônia (CCSRO) · INCT-Conexão",
+    "eyebrow": "Centro de Clima de Saúde de Rondônia (CCSRO) · INCT-CONEXAO",
     "title": "climasusDB: base aberta de dados integrados sobre clima, ambiente e Saúde Única no Brasil",
     "lede": "O climasusDB organiza dados públicos sobre clima, ambiente e saúde no Brasil em uma base aberta, versionada e pronta para reuso. A proposta é apoiar pesquisa, vigilância, visualização e produtos digitais na perspectiva da Saúde Única.",
     "institution_title": "Vínculo institucional",
-    "institution_body": "O climasusDB é parte do Centro de Clima de Saúde de Rondônia e integra o ecossistema climaSUS. O desenvolvimento é financiado pelo INCT-Conexão, com foco em infraestrutura aberta para análise de riscos climáticos e seus efeitos sobre a saúde no Brasil.",
+    "institution_body": "O climasusDB é parte do Centro de Clima de Saúde de Rondônia e integra o ecossistema climaSUS. O desenvolvimento é financiado pelo INCT-CONEXAO (Instituto Nacional de Pesquisa e Conhecimento de Excelência da Amazônia Ocidental e Oriental), com foco em infraestrutura aberta para análise de riscos climáticos e seus efeitos sobre a saúde no Brasil.",
     "sections": [
       {
         "title": "O que é o climasusDB",
@@ -138,13 +138,13 @@
     ],
     "team": {
       "title": "Equipe do núcleo",
-      "body": "Quem faz isso acontecer: pesquisadores, desenvolvedores e comunicadores científicos do CCSRO, Fiocruz-RO e INCT-Conexão. A equipe é aberta a colaborações externas — se você quer contribuir, entre em contato.",
+      "body": "Quem faz isso acontecer: pesquisadores, desenvolvedores e comunicadores científicos do CCSRO, Fiocruz-RO e INCT-CONEXAO. A equipe é aberta a colaborações externas — se você quer contribuir, entre em contato.",
       "members": [
         {
           "name": "Dr. Max Anjos",
           "role": "Coordenação · Mantenedor",
-          "institution": "UFJF · Fiocruz-RO (CCSRO) · INCT-Conexão",
-          "email": "max.anjos@campus.ul.pt",
+          "institution": "Departamento de Geociências/UFJF",
+          "email": "max.anjos@ufjf.br",
           "photo": "/team/max-anjos.jpg",
           "github": "https://github.com/ByMaxAnjos",
           "linkedin": "https://linkedin.com/in/maxanjos"

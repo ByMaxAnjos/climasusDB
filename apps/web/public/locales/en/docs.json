@@ -78,7 +78,7 @@
     "title": "climasusDB: an open integrated database for climate, environment and One Health in Brazil",
     "lede": "climasusDB organizes public data on climate, environment and health in Brazil into an open, versioned database ready for reuse. It supports research, surveillance, visualization and digital products from a One Health perspective.",
     "institution_title": "Institutional context",
-    "institution_body": "climasusDB is part of the Rondônia Climate and Health Center and the broader climaSUS ecosystem. Development is funded by INCT-Conexão, with a focus on open infrastructure for analyzing climate risks and health outcomes in Brazil.",
+    "institution_body": "climasusDB is part of the Rondônia Climate and Health Center and the broader climaSUS ecosystem. Development is funded by INCT-CONEXAO (National Institute for Research and Center of Excellence in Knowledge of Western and Eastern Amazonia), with a focus on open infrastructure for analyzing climate risks and health outcomes in Brazil.",
     "sections": [
       {
         "title": "What climasusDB is",
@@ -143,8 +143,8 @@
         {
           "name": "Dr. Max Anjos",
           "role": "Coordination · Maintainer",
-          "institution": "UFJF · Fiocruz-RO (CCSRO) · INCT-Conexão",
-          "email": "max.anjos@campus.ul.pt",
+          "institution": "Department of Geosciences/UFJF",
+          "email": "max.anjos@ufjf.br",
           "photo": "/team/max-anjos.jpg",
           "github": "https://github.com/ByMaxAnjos",
           "linkedin": "https://linkedin.com/in/maxanjos"

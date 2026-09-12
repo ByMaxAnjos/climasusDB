@@ -78,7 +78,7 @@
     "title": "climasusDB: base abierta de datos integrados sobre clima, ambiente y Una Salud en Brasil",
     "lede": "climasusDB organiza datos públicos sobre clima, ambiente y salud en Brasil en una base abierta, versionada y lista para reutilización. La propuesta es apoyar investigación, vigilancia, visualización y productos digitales desde la perspectiva de Una Salud.",
     "institution_title": "Vínculo institucional",
-    "institution_body": "climasusDB es parte del Centro de Clima y Salud de Rondônia e integra el ecosistema climaSUS. El desarrollo está financiado por INCT-Conexão, con foco en infraestructura abierta para analizar riesgos climáticos y sus efectos sobre la salud en Brasil.",
+    "institution_body": "climasusDB es parte del Centro de Clima y Salud de Rondônia e integra el ecosistema climaSUS. El desarrollo está financiado por INCT-CONEXAO (Instituto Nacional de Investigación y Centro de Excelencia en Conocimiento de la Amazonia Occidental y Oriental), con foco en infraestructura abierta para analizar riesgos climáticos y sus efectos sobre la salud en Brasil.",
     "sections": [
       {
         "title": "Qué es climasusDB",
@@ -143,8 +143,8 @@
         {
           "name": "Dr. Max Anjos",
           "role": "Coordinación · Mantenedor",
-          "institution": "UFJF · Fiocruz-RO (CCSRO) · INCT-Conexão",
-          "email": "max.anjos@campus.ul.pt",
+          "institution": "Departamento de Geociencias/UFJF",
+          "email": "max.anjos@ufjf.br",
           "photo": "/team/max-anjos.jpg",
           "github": "https://github.com/ByMaxAnjos",
           "linkedin": "https://linkedin.com/in/maxanjos"
