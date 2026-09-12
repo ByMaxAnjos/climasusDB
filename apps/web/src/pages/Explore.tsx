@@ -5,6 +5,7 @@ import { ChartPanel, type ChartView } from "../components/charts/ChartPanel";
 import type { SeasonalityRow } from "../components/charts/SeasonalityChart";
 import {
   query,
+  dataUrl,
   HEALTH_CLIMATE_FILE,
   DIM_STATION_FILE,
   DLNM_EXPOSURE_FILE,
@@ -63,7 +64,7 @@ export function Explore({ forcedThemeId }: { forcedThemeId?: string } = {}) {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch("/geo/municipios_br.geojson");
+        const res = await fetch(dataUrl("/geo/municipios_br.geojson"));
         const fc = (await res.json()) as GeoJSON.FeatureCollection;
         const munis: MuniOption[] = fc.features
           .map((f) => f.properties as MuniOption)

@@ -5,6 +5,7 @@ import { Protocol } from "pmtiles";
 import { MapboxOverlay } from "@deck.gl/mapbox";
 import { ScatterplotLayer } from "@deck.gl/layers";
 import type { Metric } from "./types";
+import { dataUrl } from "./db";
 
 // Registra o protocolo pmtiles:// uma única vez (nível de módulo) — o
 // MapLibre resolve "pmtiles://<url>" delegando a leitura de tiles (via HTTP
@@ -13,7 +14,7 @@ const pmtilesProtocol = new Protocol();
 maplibregl.addProtocol("pmtiles", pmtilesProtocol.tile);
 
 const MUNICIPIOS_SOURCE_LAYER = "municipios"; // definido por --layer= no generate_pmtiles.R
-const MUNICIPIOS_PMTILES_URL = `pmtiles://${window.location.origin}/tiles/municipios_br.pmtiles`;
+const MUNICIPIOS_PMTILES_URL = `pmtiles://${dataUrl("/tiles/municipios_br.pmtiles")}`;
 
 export interface Station {
   station_code: string;
@@ -140,7 +141,7 @@ export function Map({ values, metric, stations, filterUfs, onSelectMuni }: MapPr
       });
 
       // Contorno estadual, sempre visível — só orientação, sem interação.
-      map.addSource("estados", { type: "geojson", data: "/geo/estados_br.geojson" });
+      map.addSource("estados", { type: "geojson", data: dataUrl("/geo/estados_br.geojson") });
       map.addLayer({
         id: "estados-outline",
         type: "line",
@@ -170,7 +171,7 @@ export function Map({ values, metric, stations, filterUfs, onSelectMuni }: MapPr
       map.addControl(overlay as unknown as maplibregl.IControl);
     });
 
-    fetch("/geo/estados_br.geojson")
+    fetch(dataUrl("/geo/estados_br.geojson"))
       .then((res) => res.json())
       .then((fc: GeoJSON.FeatureCollection) => {
         estadosRef.current = fc;
