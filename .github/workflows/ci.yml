@@ -37,6 +37,8 @@ jobs:
         with:
           r-version: "4.5"
       - uses: r-lib/actions/setup-renv@v2
+        id: renv-restore
+        continue-on-error: true
         with:
           working-directory: "."
         env:
@@ -45,6 +47,17 @@ jobs:
           # climasus4r juntos (falha em cascata sem nenhum erro real no log).
           # Serial é mais lento, mas confiável.
           RENV_CONFIG_INSTALL_JOBS: "1"
+      # DEBUG temporário: renv::restore() reporta "dependency failed" sem
+      # mostrar o erro real de instalação. Se o passo acima falhar, tenta
+      # instalar um pacote simples direto (fora do renv) pra expor o erro
+      # de verdade. Remover assim que a causa raiz for identificada.
+      - name: Debug — instala pacote simples direto (fora do renv)
+        if: steps.renv-restore.outcome == 'failure'
+        run: |
+          Rscript -e 'install.packages("magrittr", repos = "https://packagemanager.posit.co/cran/__linux__/noble/latest")'
+      - name: Fail se renv::restore() falhou
+        if: steps.renv-restore.outcome == 'failure'
+        run: exit 1
       # Gerador sintético é 100% offline — roda sempre em CI, mesmo sem
       # acesso a DATASUS/INMET (pipeline real não é exercitado aqui).
       - run: Rscript pipelines/R/00_synth_data.R
