@@ -39,6 +39,12 @@ jobs:
       - uses: r-lib/actions/setup-renv@v2
         with:
           working-directory: "."
+        env:
+          # renv instala 4 pacotes em paralelo por padrão — no runner de 2
+          # vCPUs isso derrubou workers em silêncio ao instalar arrow/duckdb/
+          # climasus4r juntos (falha em cascata sem nenhum erro real no log).
+          # Serial é mais lento, mas confiável.
+          RENV_CONFIG_INSTALL_JOBS: "1"
       # Gerador sintético é 100% offline — roda sempre em CI, mesmo sem
       # acesso a DATASUS/INMET (pipeline real não é exercitado aqui).
       - run: Rscript pipelines/R/00_synth_data.R
