@@ -1,5 +1,6 @@
 export interface CatalogPartition {
-  uf: string;
+  key: string; // chave de partição Hive (ex. "uf", "regiao"); "all" se o dataset for nacional/sem partição
+  value: string; // valor da partição (ex. "RO", "Nordeste"); "all" se sem partição
   path: string; // relativo a /data
   rows: number;
 }

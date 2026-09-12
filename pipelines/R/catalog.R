@@ -426,7 +426,14 @@ DATASET_DOCS <- list(
 )
 
 find_gold_files <- function(public_dir) {
-  Sys.glob(file.path(public_dir, "gold", "*", "v*", "uf=*", "data.parquet"))
+  # Dois formatos aceitos: particionado por qualquer chave Hive
+  # (uf=RO, regiao=Nordeste, municipio=3550308, ...) ou nacional/sem
+  # partição (data.parquet direto em v{version}/). dataset_info_from_path()
+  # decide qual é qual pelo nome do penúltimo segmento do path.
+  c(
+    Sys.glob(file.path(public_dir, "gold", "*", "v*", "*", "data.parquet")),
+    Sys.glob(file.path(public_dir, "gold", "*", "v*", "data.parquet"))
+  )
 }
 
 read_climasus_meta <- function(path) {
@@ -479,14 +486,24 @@ build_resource_entries <- function(path, rel_path, ds, docs) {
 }
 
 dataset_info_from_path <- function(path) {
-  # .../gold/{dataset}/v{version}/uf={uf}/data.parquet
+  # Duas formas:
+  #   .../gold/{dataset}/v{version}/{key}={value}/data.parquet  (particionado)
+  #   .../gold/{dataset}/v{version}/data.parquet                (nacional, sem partição)
+  # O penúltimo segmento é a versão ("v1.0.0") no caso sem partição, ou o
+  # diretório "{key}={value}" no caso particionado — distinguimos pelo prefixo "v".
   parts <- strsplit(path, "/", fixed = TRUE)[[1]]
   n <- length(parts)
-  list(
-    dataset = parts[n - 3],
-    version = sub("^v", "", parts[n - 2]),
-    uf      = sub("^uf=", "", parts[n - 1])
-  )
+  if (grepl("^v[0-9]", parts[n - 1])) {
+    list(dataset = parts[n - 2], version = sub("^v", "", parts[n - 1]), key = "all", value = "all")
+  } else {
+    kv <- strsplit(parts[n - 1], "=", fixed = TRUE)[[1]]
+    list(
+      dataset = parts[n - 3],
+      version = sub("^v", "", parts[n - 2]),
+      key     = kv[1],
+      value   = if (length(kv) > 1) kv[2] else NA_character_
+    )
+  }
 }
 
 build_datapackage <- function(path, rel_path, meta, info) {
@@ -496,7 +513,7 @@ build_datapackage <- function(path, rel_path, meta, info) {
   description <- if (!is.null(docs)) {
     docs$description
   } else {
-    sprintf("Gold dataset '%s', uf=%s. Ver docs/DATA_MODEL.md.", info$dataset, info$uf)
+    sprintf("Gold dataset '%s', %s=%s. Ver docs/DATA_MODEL.md.", info$dataset, info$key, info$value)
   }
 
   list(
@@ -524,12 +541,14 @@ build_catalog <- function(public_dir) {
     cli::cli_abort("Nenhum Parquet Gold encontrado em {.path {public_dir}/gold}")
   }
 
-  # Cada dataset Gold é Hive-particionado por UF — um dataset com N UFs gera N
-  # arquivos data.parquet (mesma versão). Guardamos cada partição em
-  # `partitions` (fonte de verdade) para não perder rows/path das UFs
-  # "anteriores" quando há mais de uma — só sobrescrever path/rows a cada
-  # iteração (como antes) fazia catalog.json mentir o total nacional pelo
-  # total da última UF processada.
+  # Cada dataset Gold é Hive-particionado por uma chave arbitrária (uf=RO,
+  # regiao=Nordeste, ...) ou nacional/sem partição (key="all", value="all",
+  # um arquivo só). Um dataset com N partições gera N arquivos data.parquet
+  # (mesma versão). Guardamos cada partição em `partitions` (fonte de
+  # verdade) para não perder rows/path das partições "anteriores" quando há
+  # mais de uma — só sobrescrever path/rows a cada iteração (como antes)
+  # fazia catalog.json mentir o total nacional pelo total da última partição
+  # processada.
   entries <- list()
   for (path in files) {
     info <- dataset_info_from_path(path)
@@ -540,38 +559,39 @@ build_catalog <- function(public_dir) {
     dp_path <- file.path(dirname(path), "datapackage.json")
     jsonlite::write_json(dp, dp_path, auto_unbox = TRUE, pretty = TRUE)
 
-    key <- info$dataset
-    if (is.null(entries[[key]])) {
-      entries[[key]] <- list(versions = character(0), partitions = list(), synthetic = FALSE)
+    dataset_key <- info$dataset
+    if (is.null(entries[[dataset_key]])) {
+      entries[[dataset_key]] <- list(versions = character(0), partitions = list(), synthetic = FALSE)
     }
-    entries[[key]]$versions <- union(entries[[key]]$versions, info$version)
-    entries[[key]]$partitions[[length(entries[[key]]$partitions) + 1L]] <- list(
-      version = info$version, uf = info$uf, path = rel_path, rows = dp$rows,
+    entries[[dataset_key]]$versions <- union(entries[[dataset_key]]$versions, info$version)
+    entries[[dataset_key]]$partitions[[length(entries[[dataset_key]]$partitions) + 1L]] <- list(
+      version = info$version, key = info$key, value = info$value, path = rel_path, rows = dp$rows,
       synthetic = isTRUE(meta$user$synthetic)
     )
   }
 
-  datasets <- lapply(names(entries), function(key) {
-    e <- entries[[key]]
+  datasets <- lapply(names(entries), function(dataset_key) {
+    e <- entries[[dataset_key]]
     latest <- sort(e$versions, decreasing = TRUE)[1]
     latest_parts <- Filter(function(p) p$version == latest, e$partitions)
-    latest_parts <- latest_parts[order(vapply(latest_parts, `[[`, character(1), "uf"))]
+    latest_parts <- latest_parts[order(vapply(latest_parts, `[[`, character(1), "value"))]
 
     list(
-      name      = key,
+      name      = dataset_key,
       latest    = paste0("v", latest),
       versions  = paste0("v", sort(e$versions)),
       # Derivado das partições da versão `latest` — não do último arquivo do
       # glob, que podia ser de outra versão (ex. v0.1.0 sintético residual).
       synthetic = any(vapply(latest_parts, function(p) isTRUE(p$synthetic), logical(1))),
-      # path/rows = só a 1ª partição (ordem alfabética de UF) e a SOMA de
-      # linhas entre todas — compatível com o caso de 1 UF só (hoje: RO).
-      # `partitions` é o que qualquer leitor multi-UF (ex. frontend) deve
-      # usar de fato: não há listagem de diretório em hosting estático/HTTP
-      # range, então cada UF precisa da sua própria URL explícita.
+      # path/rows = só a 1ª partição (ordem alfabética do valor) e a SOMA de
+      # linhas entre todas — compatível com o caso de 1 partição só.
+      # `partitions` é o que qualquer leitor multi-partição (ex. frontend)
+      # deve usar de fato: não há listagem de diretório em hosting
+      # estático/HTTP range, então cada partição precisa da sua própria URL
+      # explícita.
       path       = latest_parts[[1]]$path,
       rows       = sum(vapply(latest_parts, `[[`, numeric(1), "rows"), na.rm = TRUE),
-      partitions = lapply(latest_parts, function(p) list(uf = p$uf, path = p$path, rows = p$rows))
+      partitions = lapply(latest_parts, function(p) list(key = p$key, value = p$value, path = p$path, rows = p$rows))
     )
   })
 

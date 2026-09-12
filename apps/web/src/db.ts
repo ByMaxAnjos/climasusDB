@@ -67,7 +67,8 @@ export async function registerDataset(name: string, path: string): Promise<void>
 }
 
 interface CatalogPartition {
-  uf: string;
+  key: string; // chave de partição Hive (ex. "uf", "regiao"); "all" se o dataset for nacional/sem partição
+  value: string; // valor da partição (ex. "RO", "Nordeste"); "all" se sem partição
   path: string; // relativo a data/public
   rows: number;
 }
@@ -80,11 +81,12 @@ interface Catalog {
   datasets: CatalogDataset[];
 }
 
-// gold/{dataset} é particionado por UF (Fase 2: 27 UFs) — não há listagem de
-// diretório em hosting estático/HTTP range (nem no bucket GCS futuro), então
-// cada partição precisa da sua própria URL explícita. `catalog.json` já lista
-// exatamente essas URLs (ver comentário em pipelines/R/catalog.R); a view
-// nacional é a UNION de todas as partições da versão `latest`.
+// gold/{dataset} é particionado por uma chave arbitrária (uf=RO, regiao=,
+// ou nenhuma) — não há listagem de diretório em hosting estático/HTTP range
+// (nem no bucket GCS futuro), então cada partição precisa da sua própria URL
+// explícita. `catalog.json` já lista exatamente essas URLs (ver comentário
+// em pipelines/R/catalog.R); a view nacional é a UNION de todas as
+// partições da versão `latest`.
 async function createUnionView(viewName: string, datasetName: string, catalog: Catalog, optional = false): Promise<boolean> {
   const ds = catalog.datasets.find((d) => d.name === datasetName);
   if (!ds) {
@@ -93,9 +95,9 @@ async function createUnionView(viewName: string, datasetName: string, catalog: C
   }
 
   await Promise.all(
-    ds.partitions.map((p, i) => registerDataset(`${datasetName}_${i}_${p.uf}.parquet`, `/data/${p.path}`)),
+    ds.partitions.map((p, i) => registerDataset(`${datasetName}_${i}_${p.value}.parquet`, `/data/${p.path}`)),
   );
-  const fileList = ds.partitions.map((p, i) => `'${datasetName}_${i}_${p.uf}.parquet'`).join(", ");
+  const fileList = ds.partitions.map((p, i) => `'${datasetName}_${i}_${p.value}.parquet'`).join(", ");
 
   const db = await getDb();
   const conn = await db.connect();

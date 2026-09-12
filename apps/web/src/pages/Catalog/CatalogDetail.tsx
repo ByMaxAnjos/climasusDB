@@ -54,7 +54,7 @@ export function CatalogDetail({ dataset }: { dataset: string }) {
         setPkg(dp);
 
         const fields = dp.resources[0]?.schema.fields.map((f) => f.name) ?? [];
-        const partitions = found.partitions?.length ? found.partitions : [{ uf: "", path: found.path, rows: found.rows }];
+        const partitions = found.partitions?.length ? found.partitions : [{ key: "all", value: "", path: found.path, rows: found.rows }];
         const tables = partitions.map((_, i) => `${dataset}_detail_${i}.parquet`);
         const sql = coverageSql(`read_parquet([${tables.map((f) => `'${f}'`).join(", ")}])`, fields);
         if (sql) {
@@ -88,14 +88,15 @@ export function CatalogDetail({ dataset }: { dataset: string }) {
         {t("version")}: {pkg.version} · {t("rows")}: {pkg.rows.toLocaleString()}
       </p>
       {entry.partitions?.length > 1 ? (
-        // Dataset particionado por UF: um botão por UF para Parquet, e um
-        // segundo bloco para formatos de conveniência quando existirem.
+        // Dataset particionado (por UF, região, etc.): um botão por partição
+        // para Parquet, e um segundo bloco para formatos de conveniência
+        // quando existirem.
         <section>
           <div className="eyebrow">{t("download_parquet")}</div>
           <p style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
             {entry.partitions.map((p) => (
               <a key={p.path} className="btn" href={dataUrl(`/data/${p.path}`)} download>
-                {p.uf || entry.name}
+                {p.value || entry.name}
               </a>
             ))}
           </p>
@@ -105,7 +106,7 @@ export function CatalogDetail({ dataset }: { dataset: string }) {
               <p style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
                 {entry.partitions.map((p) => (
                   <a key={`${p.path}-csv`} className="btn" href={dataUrl(`/data/${toVariantPath(p.path, ".csv.zip")}`)} download>
-                    {p.uf || entry.name}
+                    {p.value || entry.name}
                   </a>
                 ))}
               </p>
