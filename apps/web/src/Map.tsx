@@ -30,6 +30,11 @@ interface MapProps {
   // chegar aqui, então o mapa não precisa saber qual seletor originou a lista.
   filterUfs: string[] | null;
   onSelectMuni: (codeMuni: number, nameMuni: string) => void;
+  // Mapa é essencialmente visual (canvas WebGL, sem texto no DOM) — o único
+  // conteúdo que chega a um leitor de tela é este rótulo. A alternativa
+  // tabular de verdade (dados navegáveis) mora em Explore.tsx, fora deste
+  // componente, ao lado do mapa.
+  ariaLabel: string;
 }
 
 type Bbox = [number, number, number, number]; // [minLon, minLat, maxLon, maxLat]
@@ -63,7 +68,7 @@ function mergeBbox(a: Bbox, b: Bbox): Bbox {
   return [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[2], b[2]), Math.max(a[3], b[3])];
 }
 
-export function Map({ values, metric, filterUfs, onSelectMuni }: MapProps) {
+export function Map({ values, metric, filterUfs, onSelectMuni, ariaLabel }: MapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const estadosRef = useRef<GeoJSON.FeatureCollection | null>(null);
@@ -261,5 +266,5 @@ export function Map({ values, metric, filterUfs, onSelectMuni }: MapProps) {
     return () => { map.off("idle", applyFilter); };
   }, [filterUfs]);
 
-  return <div ref={containerRef} style={{ width: "100%", height: "100%" }} />;
+  return <div ref={containerRef} role="img" aria-label={ariaLabel} style={{ width: "100%", height: "100%" }} />;
 }

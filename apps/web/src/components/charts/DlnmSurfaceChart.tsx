@@ -78,7 +78,11 @@ export function DlnmSurfaceChart({ rows, ufLabel }: DlnmSurfaceChartProps) {
         {ufLabel ? t("charts:dlnm.surface_title", { name: ufLabel }) : t("select_municipality")}
       </h3>
       {ufLabel && rows.length === 0 && <p className="page-lede">{t("charts:no_data")}</p>}
-      <div ref={containerRef} />
+      <div
+        ref={containerRef}
+        role="img"
+        aria-label={`${ufLabel ? t("charts:dlnm.surface_title", { name: ufLabel }) : t("select_municipality")} — ${t("charts:dlnm.lag_axis")} x ${t("charts:dlnm.exposure_axis")} x ${t("charts:dlnm.log_rr_axis")}`}
+      />
       {ufLabel && rows.length > 0 && (
         <>
           {hasAutocorr && (
@@ -86,6 +90,25 @@ export function DlnmSurfaceChart({ rows, ufLabel }: DlnmSurfaceChartProps) {
               {t("charts:dlnm.autocorr_warning")}
             </p>
           )}
+          <table className="visually-hidden">
+            <caption>{t("charts:dlnm.surface_title", { name: ufLabel })}</caption>
+            <thead>
+              <tr>
+                <th>{t("charts:dlnm.lag_axis")}</th>
+                <th>{t("charts:dlnm.exposure_axis")}</th>
+                <th>{t("charts:dlnm.rr_axis")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, i) => (
+                <tr key={i}>
+                  <td>{row.lag}</td>
+                  <td>{row.exposure}</td>
+                  <td>{row.rr}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
           <ExportButtons
             rows={rows as unknown as Record<string, unknown>[]}
             getSvg={() => containerRef.current?.querySelector("svg") ?? null}

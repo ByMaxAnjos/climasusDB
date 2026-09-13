@@ -322,9 +322,9 @@ export function Explore({ forcedThemeId }: { forcedThemeId?: string } = {}) {
           flexWrap: "wrap",
         }}
       >
-        <label style={{ fontSize: 14, color: "var(--muted)" }}>
+        <label htmlFor="filter-indicator" style={{ fontSize: 14, color: "var(--muted)" }}>
           {t("indicator")}:{" "}
-          <select value={metric} onChange={(e) => setMetric(e.target.value as Metric)}>
+          <select id="filter-indicator" value={metric} onChange={(e) => setMetric(e.target.value as Metric)}>
             {METRICS.filter((m) => !isDlnmMetric(m.key) || dlnmReady).map((m) => (
               <option key={m.key} value={m.key}>
                 {t(`metric.${m.key}`)}
@@ -332,9 +332,9 @@ export function Explore({ forcedThemeId }: { forcedThemeId?: string } = {}) {
             ))}
           </select>
         </label>
-        <label style={{ fontSize: 14, color: "var(--muted)" }}>
+        <label htmlFor="filter-region" style={{ fontSize: 14, color: "var(--muted)" }}>
           {t("region")}:{" "}
-          <select value={combinedRegionValue} onChange={(e) => handleRegionOrGroupChange(e.target.value)}>
+          <select id="filter-region" value={combinedRegionValue} onChange={(e) => handleRegionOrGroupChange(e.target.value)}>
             <option value="">—</option>
             <optgroup label={t("region_ibge")}>
               {regionOptions.map((r) => (
@@ -354,9 +354,10 @@ export function Explore({ forcedThemeId }: { forcedThemeId?: string } = {}) {
             ))}
           </select>
         </label>
-        <label style={{ fontSize: 14, color: "var(--muted)" }}>
+        <label htmlFor="filter-state" style={{ fontSize: 14, color: "var(--muted)" }}>
           {t("state")}:{" "}
           <select
+            id="filter-state"
             value={selectedUf}
             onChange={(e) => {
               setSelectedUf(e.target.value);
@@ -372,9 +373,10 @@ export function Explore({ forcedThemeId }: { forcedThemeId?: string } = {}) {
             ))}
           </select>
         </label>
-        <label style={{ fontSize: 14, color: "var(--muted)" }}>
+        <label htmlFor="filter-municipality" style={{ fontSize: 14, color: "var(--muted)" }}>
           {t("municipality")}:{" "}
           <select
+            id="filter-municipality"
             value={selectedMuni?.code ?? ""}
             onChange={(e) => {
               const opt = visibleMuniOptions.find((m) => m.code_muni === Number(e.target.value));
@@ -389,8 +391,9 @@ export function Explore({ forcedThemeId }: { forcedThemeId?: string } = {}) {
             ))}
           </select>
         </label>
-        <label style={{ marginLeft: "auto" }}>
-          <select aria-label={t("language")} value={i18n.language} onChange={(e) => i18n.changeLanguage(e.target.value)}>
+        <label htmlFor="filter-language" style={{ marginLeft: "auto" }}>
+          <span className="visually-hidden">{t("language")}</span>
+          <select id="filter-language" aria-label={t("language")} value={i18n.language} onChange={(e) => i18n.changeLanguage(e.target.value)}>
             <option value="pt">PT</option>
             <option value="en">EN</option>
             <option value="es">ES</option>
@@ -401,8 +404,50 @@ export function Explore({ forcedThemeId }: { forcedThemeId?: string } = {}) {
       </header>
 
       <div style={{ flex: 1, display: "flex", minHeight: 0 }}>
-        <div style={{ flex: 2 }}>
-          <Map values={mapValues} metric={metric} filterUfs={filterUfs} onSelectMuni={handleSelectMuni} />
+        <div style={{ flex: 2, display: "flex", flexDirection: "column", minHeight: 0 }}>
+          <div style={{ flex: 1, minHeight: 0 }}>
+            <Map
+              values={mapValues}
+              metric={metric}
+              filterUfs={filterUfs}
+              onSelectMuni={handleSelectMuni}
+              ariaLabel={t("map_aria_label", { metric: t(`metric.${metric}`), scope: scopeLabel })}
+            />
+          </div>
+          <details style={{ padding: "8px 24px", borderTop: "1px solid var(--rule)", background: "var(--paper-3)" }}>
+            <summary
+              style={{
+                cursor: "pointer",
+                fontFamily: '"IBM Plex Mono", monospace',
+                fontSize: 12,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                color: "var(--accent)",
+              }}
+            >
+              {t("map_table_toggle")}
+            </summary>
+            <div style={{ maxHeight: 240, overflowY: "auto", marginTop: 8 }}>
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>{t("map_table_municipality")}</th>
+                    <th>{t(`metric.${metric}`)}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(comparisonValues)
+                    .sort(([, a], [, b]) => b - a)
+                    .map(([code, value]) => (
+                      <tr key={code}>
+                        <td>{muniNames[Number(code)] ?? code}</td>
+                        <td>{value.toLocaleString()}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          </details>
         </div>
         <div style={{ flex: 1, padding: 20, borderLeft: "1px solid var(--rule)", background: "var(--paper-3)", overflowY: "auto" }}>
           <ChartPanel

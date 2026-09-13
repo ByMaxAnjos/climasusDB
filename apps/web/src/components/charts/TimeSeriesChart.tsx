@@ -46,9 +46,30 @@ export function TimeSeriesChart({ rows, metric, muniLabel, height = 260 }: TimeS
       <h3 style={{ margin: "0 0 8px 0", fontSize: 14 }}>
         {muniLabel ? t("time_series_title", { name: muniLabel }) : t("select_municipality")}
       </h3>
-      <div ref={containerRef} />
+      <div
+        ref={containerRef}
+        role="img"
+        aria-label={`${muniLabel ? t("time_series_title", { name: muniLabel }) : t("select_municipality")} — ${t(`metric.${metric}`)}`}
+      />
       {rows.length > 0 && (
         <>
+          <table className="visually-hidden">
+            <caption>{t("time_series_title", { name: muniLabel ?? "" })}</caption>
+            <thead>
+              <tr>
+                <th>{t("date_axis")}</th>
+                <th>{t(`metric.${metric}`)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr key={row.date}>
+                  <td>{row.date}</td>
+                  <td>{row[metric as keyof HealthClimateRow]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
           <ExportButtons
             rows={rows as unknown as Record<string, unknown>[]}
             getSvg={() => containerRef.current?.querySelector("svg") ?? null}

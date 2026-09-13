@@ -76,10 +76,12 @@ export function ChartPanel({
   return (
     <div>
       <div style={{ display: "flex", gap: 6, marginBottom: 16, flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+        <div role="tablist" aria-label={t("chart_tabs_label")} style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
           {views.map((v) => (
             <button
               key={v}
+              role="tab"
+              aria-selected={activeView === v}
               className={`nav-link${activeView === v ? " active" : ""}`}
               style={{ border: "none", cursor: "pointer", background: activeView === v ? undefined : "transparent" }}
               onClick={() => onViewChange(v)}

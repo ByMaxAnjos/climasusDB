@@ -252,15 +252,43 @@ export function DeathsDashboard() {
           <section className="dashboard-section">
             <h3>{t("deaths_dashboard.groups_title")}</h3>
             <p className="page-lede">{t("deaths_dashboard.groups_note")}</p>
-            <div ref={groupsRef} />
+            <div ref={groupsRef} role="img" aria-label={t("deaths_dashboard.groups_title")} />
             <p className="dashboard-chart-note">{t("deaths_dashboard.groups_legend")}</p>
+            <table className="visually-hidden">
+              <caption>{t("deaths_dashboard.groups_title")}</caption>
+              <tbody>
+                {groupRows.map((row) => (
+                  <tr key={row.group}>
+                    <td>{row.group}</td>
+                    <td>{row.value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </section>
 
           <section className="dashboard-section">
             <h3>{t("deaths_dashboard.trend_title")}</h3>
             <p className="page-lede">{t("deaths_dashboard.trend_note")}</p>
-            <div ref={trendRef} />
+            <div ref={trendRef} role="img" aria-label={t("deaths_dashboard.trend_title")} />
             <p className="dashboard-chart-note">{t("deaths_dashboard.trend_legend")}</p>
+            <table className="visually-hidden">
+              <caption>{t("deaths_dashboard.trend_title")}</caption>
+              <thead>
+                <tr>
+                  <th>{t("deaths_dashboard.month_axis")}</th>
+                  <th>{t("deaths_dashboard.kpis.deaths")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {monthly.map((row) => (
+                  <tr key={row.month}>
+                    <td>{row.month}</td>
+                    <td>{row.deaths_total}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </section>
 
           <section className="dashboard-section">
@@ -269,9 +297,9 @@ export function DeathsDashboard() {
                 <h3>{t("deaths_dashboard.association_title")}</h3>
                 <p className="page-lede">{t("deaths_dashboard.association_note")}</p>
               </div>
-              <label>
+              <label htmlFor="climate-variable">
                 {t("deaths_dashboard.climate_label")}{" "}
-                <select value={climateVariable} onChange={(event) => setClimateVariable(event.target.value as ClimateVariable)}>
+                <select id="climate-variable" value={climateVariable} onChange={(event) => setClimateVariable(event.target.value as ClimateVariable)}>
                   <option value="tmax">{t("deaths_dashboard.climate.tmax")}</option>
                   <option value="precip">{t("deaths_dashboard.climate.precip")}</option>
                 </select>
@@ -283,9 +311,30 @@ export function DeathsDashboard() {
                 ? "—"
                 : `${association.toFixed(2)} (${t(`deaths_dashboard.correlation_direction.${association >= 0 ? "positive" : "negative"}`)} · ${t(`deaths_dashboard.correlation_strength.${correlationStrength(association)}`)})`}
             </p>
-            <div ref={associationRef} />
+            <div
+              ref={associationRef}
+              role="img"
+              aria-label={`${t("deaths_dashboard.association_title")} — ${t(`deaths_dashboard.climate.${climateVariable}`)}`}
+            />
             <p className="dashboard-chart-note">{t("deaths_dashboard.association_legend")}</p>
             <p className="dashboard-chart-note">{t("deaths_dashboard.correlation_caveat")}</p>
+            <table className="visually-hidden">
+              <caption>{t("deaths_dashboard.association_title")}</caption>
+              <thead>
+                <tr>
+                  <th>{t(`deaths_dashboard.climate.${climateVariable}`)}</th>
+                  <th>{t("deaths_dashboard.kpis.deaths")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {monthly.map((row) => (
+                  <tr key={row.month}>
+                    <td>{row[climateVariable]}</td>
+                    <td>{row.deaths_total}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </section>
 
           <section className="dashboard-section">

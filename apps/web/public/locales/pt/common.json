@@ -19,6 +19,9 @@
   "stations": "Estações INMET",
   "language": "Idioma",
   "date_axis": "data",
+  "map_aria_label": "Mapa coroplético do Brasil, municípios coloridos por {{metric}}, escopo: {{scope}}. Uma tabela alternativa com os mesmos dados está disponível logo abaixo do mapa.",
+  "map_table_toggle": "Ver dados do mapa em tabela",
+  "map_table_municipality": "Município",
   "nav": {
     "explore": "Explorar",
     "catalog": "Catálogo de Dados",

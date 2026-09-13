@@ -55,10 +55,31 @@ export function ComparisonBarChart({ values, muniNames, metric, scopeLabel }: Co
   return (
     <div>
       <h3 style={{ margin: "0 0 8px 0", fontSize: 14 }}>{t("charts:comparison_title", { scope: scopeLabel })}</h3>
-      <div ref={containerRef} />
+      <div
+        ref={containerRef}
+        role="img"
+        aria-label={`${t("charts:comparison_title", { scope: scopeLabel })} — ${t(`metric.${metric}`)}`}
+      />
       {rows.length === 0 && <p className="page-lede">{t("charts:no_data")}</p>}
       {rows.length > 0 && (
         <>
+          <table className="visually-hidden">
+            <caption>{t("charts:comparison_title", { scope: scopeLabel })}</caption>
+            <thead>
+              <tr>
+                <th>{t("municipality")}</th>
+                <th>{t(`metric.${metric}`)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr key={row.code_muni}>
+                  <td>{row.name_muni}</td>
+                  <td>{row.value}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
           <ExportButtons
             rows={rows}
             getSvg={() => containerRef.current?.querySelector("svg") ?? null}

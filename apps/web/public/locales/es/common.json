@@ -19,6 +19,9 @@
   "stations": "Estaciones INMET",
   "language": "Idioma",
   "date_axis": "fecha",
+  "map_aria_label": "Mapa coroplético de Brasil, municipios coloreados por {{metric}}, alcance: {{scope}}. Hay una tabla alternativa con los mismos datos justo debajo del mapa.",
+  "map_table_toggle": "Ver datos del mapa en tabla",
+  "map_table_municipality": "Municipio",
   "nav": {
     "explore": "Explorar",
     "catalog": "Catálogo de Datos",

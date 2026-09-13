@@ -19,6 +19,9 @@
   "stations": "INMET stations",
   "language": "Language",
   "date_axis": "date",
+  "map_aria_label": "Choropleth map of Brazil, municipalities colored by {{metric}}, scope: {{scope}}. An alternative table with the same data is available just below the map.",
+  "map_table_toggle": "View map data as a table",
+  "map_table_municipality": "Municipality",
   "nav": {
     "explore": "Explore",
     "catalog": "Data Catalog",

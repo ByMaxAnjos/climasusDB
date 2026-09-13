@@ -55,11 +55,34 @@ export function SeasonalityChart({ rows, metric, muniLabel, height = 260 }: Seas
       <h3 style={{ margin: "0 0 8px 0", fontSize: 14 }}>
         {muniLabel ? t("charts:seasonality_title", { name: muniLabel }) : t("select_municipality")}
       </h3>
-      <div ref={containerRef} />
+      <div
+        ref={containerRef}
+        role="img"
+        aria-label={`${muniLabel ? t("charts:seasonality_title", { name: muniLabel }) : t("select_municipality")} — ${t(`metric.${metric}`)}`}
+      />
       {muniLabel && data.length === 0 && <p className="page-lede">{t("charts:no_data")}</p>}
       {!muniLabel && <p className="page-lede">{t("charts:seasonality_hint")}</p>}
       {muniLabel && data.length > 0 && (
         <>
+          <table className="visually-hidden">
+            <caption>{t("charts:seasonality_title", { name: muniLabel })}</caption>
+            <thead>
+              <tr>
+                <th>{t("charts:month_column")}</th>
+                <th>{t("charts:year_column")}</th>
+                <th>{t(`metric.${metric}`)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((row) => (
+                <tr key={`${row.year}-${row.month}`}>
+                  <td>{row.label}</td>
+                  <td>{row.year}</td>
+                  <td>{row.value}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
           <ExportButtons
             rows={data}
             getSvg={() => containerRef.current?.querySelector("svg") ?? null}
