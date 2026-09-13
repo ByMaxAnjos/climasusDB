@@ -213,7 +213,7 @@
       "title": "Calor y mortalidad",
       "body": [
         "Este tema documenta una posibilidad metodológica del ecosistema climaSUS: relacionar extremos de calor con series diarias de salud y clima por municipio.",
-        "En la interfaz actual, la exploración pública se concentra en health_climate_daily y en la capa de estaciones INMET. Los modelos especializados permanecen como documentación metodológica del pipeline y no aparecen como indicadores principales de Explorar.",
+        "En la interfaz actual, la exploración pública se concentra en health_climate_daily. Los modelos especializados permanecen como documentación metodológica del pipeline y no aparecen como indicadores principales de Explorar.",
         "Rondônia fue el recorte original del estudio de caso que originó este enfoque; hoy la estructura de datos permite análisis nacionales conforme nuevos productos pasen por la curaduría de publicación."
       ]
     }

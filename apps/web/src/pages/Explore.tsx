@@ -50,7 +50,6 @@ export function Explore({ forcedThemeId }: { forcedThemeId?: string } = {}) {
   const [selectedMuni, setSelectedMuni] = useState<{ code: number; name: string } | null>(null);
   const [seriesRows, setSeriesRows] = useState<HealthClimateRow[]>([]);
   const [seasonalityRows, setSeasonalityRows] = useState<SeasonalityRow[]>([]);
-  const [stations, setStations] = useState<Station[]>([]);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [view, setView] = useState<ChartView>("timeseries");
   // Indicador DLNM (Fase 2b) — grão UF, não município x dia; ver ChartPanel.tsx.
@@ -94,21 +93,20 @@ export function Explore({ forcedThemeId }: { forcedThemeId?: string } = {}) {
     })();
   }, []);
 
-  // Estações INMET (camada de círculos no mapa) — dataset independente, sem dado sintético.
-  // Aproveita essa primeira query pós-status="ready" pra também checar se os
-  // 3 datasets DLNM (Fase 2b, opcionais — `make dlnm`) existem no catálogo.
+  // Aproveita uma query pós-status="ready" contra um dataset independente
+  // (garante que o registro dos datasets no DuckDB terminou) pra checar se
+  // os 3 datasets DLNM (Fase 2b, opcionais — `make dlnm`) existem no catálogo.
   useEffect(() => {
     if (status !== "ready") return;
     let cancelled = false;
     (async () => {
       try {
-        const rows = await query<Station>(`SELECT * FROM '${DIM_STATION_FILE}'`);
+        await query<Station>(`SELECT * FROM '${DIM_STATION_FILE}'`);
         if (cancelled) return;
-        setStations(rows);
         setDlnmReady(isDlnmAvailable());
       } catch (err) {
         if (!cancelled) {
-          console.error("Falha ao carregar estações INMET:", err);
+          console.error("Falha ao verificar disponibilidade de datasets:", err);
           setStatus("error");
         }
       }
@@ -404,7 +402,7 @@ export function Explore({ forcedThemeId }: { forcedThemeId?: string } = {}) {
 
       <div style={{ flex: 1, display: "flex", minHeight: 0 }}>
         <div style={{ flex: 2 }}>
-          <Map values={mapValues} metric={metric} stations={stations} filterUfs={filterUfs} onSelectMuni={handleSelectMuni} />
+          <Map values={mapValues} metric={metric} filterUfs={filterUfs} onSelectMuni={handleSelectMuni} />
         </div>
         <div style={{ flex: 1, padding: 20, borderLeft: "1px solid var(--rule)", background: "var(--paper-3)", overflowY: "auto" }}>
           <ChartPanel

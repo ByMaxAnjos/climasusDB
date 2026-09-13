@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 interface ChartExpandModalProps {
@@ -10,12 +10,19 @@ interface ChartExpandModalProps {
 export function ChartExpandModal({ title, onClose, children }: ChartExpandModalProps) {
   const { t } = useTranslation("charts");
   const dialogRef = useRef<HTMLDialogElement>(null);
+  // Os gráficos filhos medem clientWidth do próprio container no mount. Um
+  // <dialog> fechado tem display:none (via :not([open]) do UA stylesheet),
+  // então montá-los antes do showModal() rodar mede largura 0 e trava no
+  // fallback de 640px — a área do gráfico expandido fica "pela metade".
+  // Só monta {children} depois que o diálogo já está aberto e com layout real.
+  const [ready, setReady] = useState(false);
 
   // showModal() já dá backdrop, foco preso no diálogo e fechar no Escape
   // (dispara "close") de graça — nada disso precisa ser reimplementado.
   useEffect(() => {
     const dialog = dialogRef.current;
     dialog?.showModal();
+    setReady(true);
   }, []);
 
   return (
@@ -37,7 +44,7 @@ export function ChartExpandModal({ title, onClose, children }: ChartExpandModalP
           ✕
         </button>
       </div>
-      {children}
+      {ready && children}
     </dialog>
   );
 }

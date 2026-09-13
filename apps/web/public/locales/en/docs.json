@@ -213,7 +213,7 @@
       "title": "Heat and mortality",
       "body": [
         "This theme documents one methodological possibility in the climaSUS ecosystem: relating heat extremes to daily health and climate series by municipality.",
-        "In the current interface, public exploration focuses on health_climate_daily and the INMET station layer. Specialized models remain methodological pipeline documentation and are not shown as main Explore indicators.",
+        "In the current interface, public exploration focuses on health_climate_daily. Specialized models remain methodological pipeline documentation and are not shown as main Explore indicators.",
         "Rondônia was the original case-study area for this approach; today the data structure supports national analyses as new products pass publication curation."
       ]
     }

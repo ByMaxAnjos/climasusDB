@@ -12,12 +12,13 @@ DATASET_DOCS <- list(
   dim_station = list(
     title = "Estações Meteorológicas (INMET)",
     description = paste(
-      "Dimensão de estações meteorológicas automáticas do INMET usadas como",
-      "fonte de clima observacional em todo o pipeline. Uma linha por estação:",
-      "código, nome e coordenadas (WGS84). Alimenta a camada deck.gl de",
-      "estações no mapa do atlas e é a base do pareamento espacial",
-      "estação↔município (vizinho mais próximo) feito por",
-      "climasus4r::sus_climate_aggregate()."
+      "Registro cadastral das estações meteorológicas automáticas do INMET",
+      "disponíveis no bundle de dados do climasus4r (station_meta.parquet).",
+      "Uma linha por estação: código, nome e coordenadas (WGS84). É uma",
+      "dimensão de referência, publicada isoladamente — o pareamento espacial",
+      "estação↔município usado para atribuir clima aos óbitos acontece",
+      "internamente no pipeline, a partir de silver_inmet (saída de",
+      "climasus4r::sus_climate_inmet()), não a partir deste dataset."
     ),
     columns = list(
       station_code = "Código da estação automática INMET (ex. A925) — chave",
@@ -87,6 +88,57 @@ DATASET_DOCS <- list(
       python = list(available = FALSE)
     )
   ),
+  health_climate_muni_summary = list(
+    title = "Saúde & Clima — Resumo por Município",
+    description = paste(
+      "Dataset Gold derivado (Fase 2c), grão município (não município x dia)",
+      "— uma linha por município, somando health_climate_daily no período",
+      "coberto pela partição (2018-2023). Não reprocessa saúde/clima: só lê",
+      "o mart health_climate_daily já publicado e agrega por code_muni; se",
+      "health_climate_daily for regenerado (nova versão ou correção), este",
+      "dataset precisa ser regerado a partir dele. Aplica supressão de",
+      "célula pequena (k=5): contagens entre 1 e 4 viram NA e são sinalizadas",
+      "em {coluna}_suppressed — ver docs/DATA_MODEL.md para a justificativa",
+      "completa da política."
+    ),
+    columns = list(
+      code_muni               = "Código IBGE do município, 7 dígitos — chave",
+      name_muni               = "Nome do município",
+      uf                      = "Unidade federativa (partição)",
+      deaths_total            = "Soma de óbitos climate-sensitive no período. NA quando suprimido (ver deaths_total_suppressed)",
+      deaths_resp             = "Soma de óbitos respiratórios (subconjunto). NA quando suprimido",
+      deaths_circ             = "Soma de óbitos circulatórios (subconjunto). NA quando suprimido",
+      deaths_total_suppressed = "TRUE se deaths_total original estava entre 1 e 4 (célula pequena, suprimida)",
+      deaths_resp_suppressed  = "TRUE se deaths_resp original estava entre 1 e 4",
+      deaths_circ_suppressed  = "TRUE se deaths_circ original estava entre 1 e 4",
+      n_death_days            = "Nº de município-dias com >=1 óbito registrado em health_climate_daily — não é contagem de dias de calendário",
+      date_start              = "Primeira data com óbito registrado, dentro da partição",
+      date_end                = "Última data com óbito registrado, dentro da partição"
+    ),
+    generator = list(
+      r = list(
+        path = "pipelines/R/muni_summary.R",
+        fn   = "make_muni_mortality_summary()",
+        snippet = paste(
+          "daily <- arrow::read_parquet(health_climate_daily_path)",
+          "summary_df <- daily |>",
+          "  dplyr::group_by(code_muni, name_muni) |>",
+          "  dplyr::summarise(",
+          "    deaths_total = sum(deaths_total, na.rm = TRUE),",
+          "    deaths_resp  = sum(deaths_resp,  na.rm = TRUE),",
+          "    deaths_circ  = sum(deaths_circ,  na.rm = TRUE),",
+          "    n_death_days = dplyr::n(),",
+          "    date_start   = min(date, na.rm = TRUE),",
+          "    date_end     = max(date, na.rm = TRUE),",
+          "    .groups = \"drop\"",
+          "  ) |>",
+          "  suppress_small_cell(threshold = 5L)  # ver docs/DATA_MODEL.md",
+          sep = "\n"
+        )
+      ),
+      python = list(available = FALSE)
+    )
+  ),
   heatwave_events = list(
     title = "Eventos de Onda de Calor",
     description = paste(
@@ -125,12 +177,14 @@ DATASET_DOCS <- list(
         path = "pipelines/R/gold.R",
         fn   = "make_heatwave_events()",
         snippet = paste(
+          "# method/baseline/percentile vêm de cfg$heatwaves$* (config por",
+          "# execução) — valores abaixo são só os defaults ilustrativos.",
           "hw <- climasus4r::sus_climate_compute_heatwaves(",
           "  bronze_inmet,",
-          "  method         = c(\"WHO\", \"WMO\", \"INMET\"),",
-          "  baseline_start = NULL,  # usa o período disponível por estação",
-          "  baseline_end   = NULL,",
-          "  percentile     = 90",
+          "  method         = cfg$heatwaves$methods,          # default: c(\"WHO\", \"WMO\", \"INMET\")",
+          "  baseline_start = cfg$heatwaves$baseline_start,    # default: NULL (usa o período disponível por estação)",
+          "  baseline_end   = cfg$heatwaves$baseline_end,      # default: NULL",
+          "  percentile     = cfg$heatwaves$percentile         # default: 90",
           ")",
           sep = "\n"
         )

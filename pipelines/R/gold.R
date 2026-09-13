@@ -208,8 +208,8 @@ make_heatwave_events <- function(bronze_inmet, cfg) {
 }
 
 #' Dimensão de estações INMET (grão estação) — de station_meta.parquet, já
-#' embutido no climasus4r; zero rede. Alimenta a camada deck.gl de estações
-#' no atlas (Fase 2).
+#' embutido no climasus4r; zero rede. Registro cadastral de referência,
+#' publicado isoladamente (não alimenta camada nenhuma do atlas web).
 make_dim_station <- function(cfg) {
   station_meta_path <- system.file("data_4r", "station_meta.parquet", package = "climasus4r")
   stations <- arrow::read_parquet(station_meta_path) |>
@@ -222,6 +222,10 @@ make_dim_station <- function(cfg) {
   stations_climasus <- climasus4r:::new_climasus_df(
     stations,
     list(system = NULL, stage = "climate", type = "inmet")
+  )
+  stations_climasus <- climasus4r::sus_meta(
+    stations_climasus,
+    user = list(synthetic = FALSE, generator = "pipelines/R/gold.R::make_dim_station()", uf = cfg$uf)
   )
 
   out_dir <- file.path(cfg$paths$public, "gold", "dim_station",

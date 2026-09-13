@@ -24,7 +24,6 @@ export interface Station {
 interface MapProps {
   values: Record<number, number>; // code_muni -> valor do indicador atual
   metric: Metric;
-  stations: Station[]; // camada de estações INMET (círculos nativos MapLibre)
   // Lista de abbrev_state a exibir — null = Brasil todo. Único mecanismo de
   // filtro, alimentado por Estado, Região (IBGE) OU Agrupamento (bioma/bacia/
   // saúde-agro-geopolítica): todos resolvem para "quais UFs mostrar" antes de
@@ -64,18 +63,7 @@ function mergeBbox(a: Bbox, b: Bbox): Bbox {
   return [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[2], b[2]), Math.max(a[3], b[3])];
 }
 
-function stationsToGeoJSON(stations: Station[]): GeoJSON.FeatureCollection<GeoJSON.Point> {
-  return {
-    type: "FeatureCollection",
-    features: stations.map((s) => ({
-      type: "Feature",
-      geometry: { type: "Point", coordinates: [s.longitude, s.latitude] },
-      properties: { station_code: s.station_code, station_name: s.station_name },
-    })),
-  };
-}
-
-export function Map({ values, metric, stations, filterUfs, onSelectMuni }: MapProps) {
+export function Map({ values, metric, filterUfs, onSelectMuni }: MapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const estadosRef = useRef<GeoJSON.FeatureCollection | null>(null);
@@ -171,20 +159,6 @@ export function Map({ values, metric, stations, filterUfs, onSelectMuni }: MapPr
       });
       map.on("mouseleave", "municipios-fill", () => {
         map.getCanvas().style.cursor = "";
-      });
-
-      // Estações INMET — círculos nativos do MapLibre, acima dos polígonos.
-      map.addSource("inmet-stations", { type: "geojson", data: stationsToGeoJSON([]) });
-      map.addLayer({
-        id: "inmet-stations-circle",
-        type: "circle",
-        source: "inmet-stations",
-        paint: {
-          "circle-radius": 4,
-          "circle-color": "#1d9bf0",
-          "circle-stroke-color": "#ffffff",
-          "circle-stroke-width": 1,
-        },
       });
     });
 
@@ -286,24 +260,6 @@ export function Map({ values, metric, stations, filterUfs, onSelectMuni }: MapPr
     map.once("idle", applyFilter);
     return () => { map.off("idle", applyFilter); };
   }, [filterUfs]);
-
-  // Camada de estações INMET — atualiza sem tocar nos polígonos de município.
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map) return;
-
-    const applyStations = () => {
-      const source = map.getSource("inmet-stations") as maplibregl.GeoJSONSource | undefined;
-      source?.setData(stationsToGeoJSON(stations));
-    };
-
-    if (map.isStyleLoaded() && map.getSource("inmet-stations")) {
-      applyStations();
-      return;
-    }
-    map.once("idle", applyStations);
-    return () => { map.off("idle", applyStations); };
-  }, [stations]);
 
   return <div ref={containerRef} style={{ width: "100%", height: "100%" }} />;
 }
