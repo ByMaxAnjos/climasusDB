@@ -19,6 +19,8 @@ import { useRoute } from "../router";
 import { getTheme } from "../data/featured-themes";
 import { STATE_GROUPS, GROUP_CATEGORIES, getStateGroup } from "../data/state-groups";
 
+import { ClimateOutcomesPanel } from "./ClimateOutcomesPanel";
+
 interface MuniOption {
   code_muni: number;
   name_muni: string;
@@ -39,6 +41,7 @@ export function Explore({ forcedThemeId }: { forcedThemeId?: string } = {}) {
   const { t, i18n } = useTranslation();
   const { query: urlQuery } = useRoute();
   const theme = getTheme(forcedThemeId ?? urlQuery.get("theme"));
+  const [climateMode, setClimateMode] = useState(false);
   const [metric, setMetric] = useState<Metric>(theme?.explorePreset.metric ?? "deaths_total");
   const [mapValues, setMapValues] = useState<Record<number, number>>({});
   const [allMunis, setAllMunis] = useState<MuniOption[]>([]);
@@ -324,7 +327,8 @@ export function Explore({ forcedThemeId }: { forcedThemeId?: string } = {}) {
       >
         <label htmlFor="filter-indicator" style={{ fontSize: 14, color: "var(--muted)" }}>
           {t("indicator")}:{" "}
-          <select id="filter-indicator" value={metric} onChange={(e) => setMetric(e.target.value as Metric)}>
+          <select id="filter-indicator" value={climateMode ? "climate_outcomes" : metric} onChange={(e) => { setClimateMode(e.target.value === "climate_outcomes"); if (e.target.value !== "climate_outcomes") setMetric(e.target.value as Metric); }}>
+            <option value="climate_outcomes">{t("climate:title")}</option>
             {METRICS.filter((m) => !isDlnmMetric(m.key) || dlnmReady).map((m) => (
               <option key={m.key} value={m.key}>
                 {t(`metric.${m.key}`)}
@@ -403,7 +407,7 @@ export function Explore({ forcedThemeId }: { forcedThemeId?: string } = {}) {
         {status === "error" && <span style={{ color: "var(--heat)" }}>{t("error")}</span>}
       </header>
 
-      <div style={{ flex: 1, display: "flex", minHeight: 0 }}>
+      {climateMode ? <ClimateOutcomesPanel municipality={selectedMuni} uf={selectedUf || allMunis.find((m) => m.code_muni === selectedMuni?.code)?.abbrev_state || null} /> : <div style={{ flex: 1, display: "flex", minHeight: 0 }}>
         <div style={{ flex: 2, display: "flex", flexDirection: "column", minHeight: 0 }}>
           <div style={{ flex: 1, minHeight: 0 }}>
             <Map
@@ -466,7 +470,7 @@ export function Explore({ forcedThemeId }: { forcedThemeId?: string } = {}) {
             dlnmSurfaceRows={dlnmSurfaceRows}
           />
         </div>
-      </div>
+      </div>}
     </div>
   );
 }

@@ -27,6 +27,41 @@ resolve_geo_col_name <- function(df) {
   found[1]
 }
 
+#' Municípios (código DATASUS de 6 dígitos, sem dígito verificador) da UF
+#' corrente — mesma derivação de `code_muni_datasus` em `muni_points_ro()`
+#' (`municipio_meta.parquet` embutido no climasus4r, zero rede). Usado só
+#' para montar a grade completa abaixo; a conversão para o código IBGE de 7
+#' dígitos do contrato continua acontecendo depois, em `build_health_sf()`.
+muni_codes_datasus <- function(cfg) {
+  muni_meta_path <- system.file("data_4r", "municipio_meta.parquet", package = "climasus4r")
+  arrow::read_parquet(muni_meta_path) |>
+    dplyr::filter(uf_code == cfg$uf) |>
+    dplyr::transmute(code_muni = as.integer(municipio) %/% 10L)
+}
+
+#' Grade completa município(UF) x dia(cfg$years) — a "verdade" contra a qual
+#' as contagens de agg_group() são preenchidas com zero.
+#'
+#' `complete_dates = TRUE` em sus_data_aggregate() NÃO basta sozinho para
+#' grão completo (achado de revisão por pares, ver docs/DATA_MODEL.md):
+#' resolve_geo_col_name() só roda DEPOIS da agregação, então nenhum
+#' `group_by` chega a sus_data_aggregate()/complete_time_series()
+#' (climasus4r/R/sus_data_aggregate.R:624), que então completa só o eixo de
+#' datas globalmente — nunca o produto cartesiano município x data. E mesmo
+#' passando `group_by`, complete_time_series() deriva `all_groups` do
+#' próprio dado já agregado (`sus_data_aggregate.R:1610-1614`), então nunca
+#' resgata um município com ZERO óbito climate-sensitive no período inteiro.
+#' Por isso a expansão é feita aqui, explicitamente, contra a dimensão de
+#' municípios do climasus4r — não delegada a `complete_dates`.
+full_muni_day_grid <- function(cfg) {
+  calendar <- seq(
+    as.Date(sprintf("%d-01-01", min(cfg$years))),
+    as.Date(sprintf("%d-12-31", max(cfg$years))),
+    by = "day"
+  )
+  tidyr::expand_grid(code_muni = muni_codes_datasus(cfg)$code_muni, date = calendar)
+}
+
 #' Agrega óbitos por município x dia, em 3 recortes (total/resp/circ), e junta.
 # backend="tibble" em filter_cid/aggregate pelo mesmo motivo do silver.R:
 # cada função tem seu próprio default "arrow" (lazy), independente do
@@ -38,7 +73,7 @@ make_health_daily <- function(silver_sim, cfg) {
       climasus4r::sus_data_aggregate(
         time_unit      = cfg$health$time_unit,
         fun            = "count",
-        complete_dates = TRUE,
+        complete_dates = FALSE, # grade completa é feita abaixo, contra full_muni_day_grid()
         lang           = "en", # garante nome de coluna "n_deaths" (pt default daria "n_obitos")
         backend        = "tibble"
       )
@@ -49,9 +84,17 @@ make_health_daily <- function(silver_sim, cfg) {
       dplyr::select(code_muni, date, n_deaths)
   }
 
-  total <- agg_group(cfg$health$disease_group) |> dplyr::rename(deaths_total = n_deaths)
-  resp  <- agg_group("respiratory")            |> dplyr::rename(deaths_resp  = n_deaths)
-  circ  <- agg_group("cardiovascular")         |> dplyr::rename(deaths_circ  = n_deaths)
+  # full_join (não left_join) para `total`: preserva código_muni fora da
+  # grade da UF (ex.: transferência interestadual) em vez de descartá-los
+  # silenciosamente aqui — quem já filtra e avisa sobre isso é
+  # build_health_sf() (n_dropped, mais abaixo neste arquivo). Municípios da
+  # grade sem nenhum óbito naquele dia viram deaths_total = 0.
+  total <- full_muni_day_grid(cfg) |>
+    dplyr::full_join(agg_group(cfg$health$disease_group), by = c("code_muni", "date")) |>
+    dplyr::mutate(deaths_total = dplyr::coalesce(n_deaths, 0L)) |>
+    dplyr::select(-n_deaths)
+  resp <- agg_group("respiratory")    |> dplyr::rename(deaths_resp = n_deaths)
+  circ <- agg_group("cardiovascular") |> dplyr::rename(deaths_circ = n_deaths)
 
   total |>
     dplyr::left_join(resp, by = c("code_muni", "date")) |>

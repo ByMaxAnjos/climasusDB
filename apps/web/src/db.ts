@@ -55,6 +55,32 @@ export const DLNM_EXPOSURE_FILE = "dlnm_exposure_response.parquet";
 export const DLNM_LAG_FILE = "dlnm_lag_response.parquet";
 export const DLNM_SURFACE_FILE = "dlnm_surface.parquet";
 
+export const CLIMATE_OUTCOMES_FILE = "climate_outcomes_muni_day.parquet";
+export const POPULATION_MUNI_YEAR_FILE = "population_muni_year.parquet";
+let climateOutcomesAvailable = false;
+let climatePartitions: CatalogPartition[] = [];
+export async function climateOutcomesCoverage(): Promise<{ years: number[]; dateMin: string; dateMax: string }> {
+  const packages = await Promise.all(climatePartitions.map(async p => {
+    const response = await fetch(dataUrl(`/data/${p.path.replace(/[^/]+$/, "datapackage.json")}`), { cache: "no-store" });
+    if (!response.ok) throw new Error(`Coverage metadata: HTTP ${response.status}`);
+    const dp = await response.json();
+    const user = dp.climasus_meta?.user;
+    const years = Array.isArray(user?.years_covered) ? user.years_covered : [user?.years_covered];
+    if (!years.length || years.some((y: unknown) => !Number.isInteger(y)) ||
+        !/^\d{4}-\d{2}-\d{2}$/.test(user?.date_min ?? "") || !/^\d{4}-\d{2}-\d{2}$/.test(user?.date_max ?? "")) {
+      throw new Error("Missing or invalid climate coverage metadata");
+    }
+    return { years: years as number[], dateMin: user.date_min as string, dateMax: user.date_max as string };
+  }));
+  if (!packages.length) throw new Error("No climate coverage metadata");
+  return {
+    years: packages[0].years.filter(y => y !== 2020 && y !== 2021 && packages.every(p => p.years.includes(y))).sort((a, b) => b - a).slice(0, 10),
+    dateMin: packages.map(p => p.dateMin).sort().at(-1)!,
+    dateMax: packages.map(p => p.dateMax).sort()[0],
+  };
+}
+export function isClimateOutcomesAvailable(): boolean { return climateOutcomesAvailable; }
+
 const registeredFiles = new Set<string>();
 
 /** Registra um Parquet arbitrário como tabela virtual (idempotente). Usado
@@ -89,7 +115,7 @@ interface Catalog {
 // partições da versão `latest`.
 async function createUnionView(viewName: string, datasetName: string, catalog: Catalog, optional = false): Promise<boolean> {
   const ds = catalog.datasets.find((d) => d.name === datasetName);
-  if (!ds) {
+  if (!ds || ds.partitions.length === 0) {
     if (optional) return false;
     throw new Error(`Dataset '${datasetName}' ausente em catalog.json`);
   }
@@ -134,6 +160,10 @@ async function ensureDatasetsRegistered(): Promise<void> {
         createUnionView(DLNM_SURFACE_FILE, "dlnm_surface", catalog, true),
       ]);
       dlnmAvailable = er && lr && sf;
+      const daily = await createUnionView(CLIMATE_OUTCOMES_FILE, "climate_outcomes_muni_day", catalog, true);
+      const population = await createUnionView(POPULATION_MUNI_YEAR_FILE, "population_muni_year", catalog, true);
+      climateOutcomesAvailable = daily && population;
+      climatePartitions = catalog.datasets.find(d => d.name === "climate_outcomes_muni_day")?.partitions ?? [];
     })().catch((err) => {
       datasetsReadyPromise = null; // permite retry na próxima query
       throw err;

@@ -66,3 +66,20 @@ export interface DlnmSurfaceRow extends DlnmDiagnostics {
   lag: number;
   rr: number;
 }
+
+// Contrato diário bruto; supressão k=5 aplicada somente após agregação na UI.
+export const CLIMATE_OUTCOMES = ["cardiovascular", "respiratory_syndrome", "heat_related", "cold_exposure", "diarrheal", "dengue", "vector_borne", "malaria", "leptospirosis", "diabetes", "mental_disorders", "suicide_self_harm"] as const;
+export type ClimateOutcome = typeof CLIMATE_OUTCOMES[number];
+export interface ClimateOutcomeRow {
+  code_muni: number;
+  date: string;
+  system: "SIM" | "SIH";
+  outcome: ClimateOutcome;
+  n_events: number;
+}
+export interface PopulationMuniYearRow {
+  code_muni: number;
+  year: number;
+  population: number;
+  pop_source: string;
+}

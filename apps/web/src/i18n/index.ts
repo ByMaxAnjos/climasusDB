@@ -3,12 +3,16 @@ import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import HttpBackend from "i18next-http-backend";
 
+import { climateOutcomeTranslations } from "./climate-outcomes";
+
 i18next
   .use(HttpBackend)
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     fallbackLng: "pt",
+    resources: Object.fromEntries(Object.entries(climateOutcomeTranslations).map(([lng, climate]) => [lng, { climate }])),
+    partialBundledLanguages: true,
     supportedLngs: ["pt", "en", "es"],
     ns: ["common", "catalog", "docs", "featured", "charts", "groups"],
     defaultNS: "common",

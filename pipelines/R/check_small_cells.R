@@ -19,6 +19,17 @@ path <- if (length(args) >= 2) args[[2]] else
   "data/public/gold/health_climate_daily/v0.1.0/uf=RO/data.parquet"
 
 ds <- arrow::open_dataset(path)
+if ("n_events" %in% names(ds$schema)) {
+  if (threshold != 5L) stop("climate_outcomes exige k=5")
+  x <- ds |> collect()
+  bad <- is.na(x$suppressed) | (!is.na(x$n_events) & x$n_events < 0L) |
+    (!is.na(x$n_events) & x$n_events > 0L & x$n_events < 5L) |
+    (x$suppressed & (!is.na(x$n_events) | !is.na(x$rate_100k) | !is.na(x$rate_100k_std))) |
+    (!x$suppressed & is.na(x$n_events))
+  if (any(bad)) stop("Supressão inválida em ", sum(bad), " células")
+  cat("OK: k=5; ", sum(x$suppressed), " células suprimidas\n", sep="")
+  quit(status=0L)
+}
 small <- ds |>
   filter(deaths_total > 0 & deaths_total < threshold) |>
   count(code_muni, name = "n_small_cells") |>

@@ -35,3 +35,12 @@ run_national_pipeline <- function(cfg_base, ufs, get_bronze_sim_fn) {
     cli::cli_alert_info("UF {uf}: {result}")
   }
 }
+
+# Runner offline por UF: falha imediatamente, sem chamar saúde/clima remoto.
+run_cached_gold_pipeline <- function(cfg_base, ufs, make_gold_fn) {
+  lapply(ufs, function(uf) {
+    cfg <- cfg_base
+    cfg$uf <- uf
+    make_gold_fn(cfg)
+  })
+}

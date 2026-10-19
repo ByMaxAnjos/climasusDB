@@ -297,3 +297,35 @@ público — usam uma chave de metadados diferente (`"sus_meta"`), incompatível
 - `code_muni` — IBGE 7 dígitos.
 - `station_code` — estação INMET.
 - `date` — dia.
+
+## `climate_outcomes_muni_year`
+
+Gold SIM por município de **residência** × ano × 12 grupos CID da
+[spec](specs/climate_outcomes.md), produzido por `run_climate_outcomes.R` apenas
+com cache Silver. Difere do mart diário, que prioriza ocorrência.
+Janela configurável `climate_outcomes.year_min/year_max/exclude_years`: alvo
+2012–2023 sem 2020–2021; cache atual entrega 2018, 2019, 2022, 2023.
+Anos ausentes são registrados nos metadados; não viram zeros.
+Grade completa de municípios da UF × anos disponíveis × desfechos, incluindo zeros.
+
+Colunas: `code_muni`, `year`, `n_events`, `population` int32;
+`system`, `outcome`, `sex`, `age_group`, `pop_source` string;
+`suppressed` bool; `rate_100k`, `rate_100k_std` float64.
+**Limitação física:** `year` é int32, pois o escritor climasus4r converte o
+inteiro R diretamente; a spec pede int16. Demais tipos seguem §5.
+Somente `all/all`; sem denominadores estratificados, taxa padronizada é NA.
+Contagens 1–4 viram NA, com `suppressed=TRUE` e taxas NA (k=5).
+
+Denominador offline configurável `climate_outcomes.population_path`, padrão
+`data/reference/ibge_population_muni_year.parquet`: chave única
+`code_muni/year`, `population` inteiro positivo e `pop_source` identificando
+IBGE e a edição anual. Ausência de denominador produz população/taxas NA;
+`pop_21/pop_25` não são usados. População <1000 mantém contagem, taxa NA.
+Não somar desfechos sobrepostos nem tratar células suprimidas como zero.
+
+Saída `gold/climate_outcomes_muni_year/v1.0.0/uf={UF}/data.parquet`, zstd,
+chunk 100000, ordenada por município/ano/desfecho/sexo/idade e acompanhada de
+`datapackage.json` por `catalog.R`. Validadores: `check_schema.R <path>` e
+`check_small_cells.R 5 <path>`, com falha em células pequenas expostas.
+Teste offline: `Rscript --vanilla pipelines/R/run_climate_outcomes.R RO /tmp/climate-outcomes-ro`.
+Não executar nacional nem baixar dados sem aprovação.
